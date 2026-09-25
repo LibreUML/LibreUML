@@ -16,7 +16,7 @@ Before diving in, make sure you are comfortable with our core stack:
 
 - **Frontend:** React 18 + TypeScript + Vite  
 - **State Management:** Zustand  
-- **Diagram Engine:** React Flow  
+- **Diagram Engine:** Konva (react-konva)  
 - **Styling:** Tailwind CSS  
 - **Testing:** Vitest  
 
@@ -29,7 +29,7 @@ Before diving in, make sure you are comfortable with our core stack:
 2. Clone your fork locally:
 
 ```bash
-git clone https://github.com/The-Indigo0218/LibreUML.git
+git clone https://github.com/LibreUML/LibreUML.git
 cd LibreUML
 ```
 
