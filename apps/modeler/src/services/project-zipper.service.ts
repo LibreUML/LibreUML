@@ -491,7 +491,7 @@ java {
     
     lines.push("---");
     lines.push("");
-    lines.push("Created with ❤️ using [LibreUML](https://github.com/The-Indigo0218/LibreUML)");
+    lines.push("Created with ❤️ using [LibreUML](https://github.com/LibreUML/LibreUML)");
     
     return lines.join("\n");
   }
