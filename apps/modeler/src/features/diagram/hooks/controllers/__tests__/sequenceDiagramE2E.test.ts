@@ -7,12 +7,35 @@ import type {
   LibreUMLProject,
   VFSFile,
   DiagramView,
+  IRLifeline,
+  IRMessage,
+  IRActivation,
+  IRInteractionFragment,
+  IRInteractionOperand,
+  MessageKind,
+  FragmentKind,
 } from '../../../../../core/domain/vfs/vfs.types';
 import {
   isLifelineViewModel,
   isMessageViewModel,
   isActivationViewModel,
 } from '../../../../../adapters/view-models/node.view-model';
+
+/** [id, sourceLifelineId, targetLifelineId, messageKind?, sequenceNumber?, extras?] */
+type MsgEntry = [
+  string,
+  string,
+  string,
+  MessageKind?,
+  number?,
+  Partial<IRMessage>?,
+];
+
+/** [id, lifelineId, startMessageId, endMessageId?] */
+type ActivationEntry = [string, string, string, string?];
+
+/** [id, fragmentKind, coveredLifelineIds, operands] */
+type FragmentEntry = [string, FragmentKind, string[], IRInteractionOperand[]];
 
 function freshModel() {
   useModelStore.getState().resetModel();
@@ -52,39 +75,78 @@ function emptySemanticModel(id: string, name: string): SemanticModel {
   };
 }
 
+function buildLifeline(llId: string): IRLifeline {
+  return {
+    id: llId,
+    kind: 'LIFELINE',
+    name: llId,
+    participantKind: 'CLASS',
+    alias: llId,
+  };
+}
+
+function buildMessage(m: MsgEntry): IRMessage {
+  const [id, sourceLifelineId, targetLifelineId, messageKind, sequenceNumber, extras] = m;
+  return {
+    id,
+    kind: 'MESSAGE',
+    name: `op${sequenceNumber || id}`,
+    messageKind: messageKind || 'SYNC',
+    sourceLifelineId,
+    targetLifelineId,
+    sequenceNumber: sequenceNumber || 1,
+    ...(extras || {}),
+  };
+}
+
+function buildActivation(a: ActivationEntry): IRActivation {
+  return {
+    id: a[0],
+    name: '',
+    kind: 'ACTIVATION',
+    lifelineId: a[1],
+    startMessageId: a[2],
+    endMessageId: a[3],
+  };
+}
+
+function buildFragment(f: FragmentEntry): IRInteractionFragment {
+  return {
+    id: f[0],
+    kind: 'FRAGMENT',
+    name: f[1],
+    fragmentKind: f[1],
+    coveredLifelineIds: f[2],
+    operands: f[3],
+  };
+}
+
 function diagramFile(
   id: string,
   standalone: boolean,
   lifelineEntries: [string, number][],
-  msgEntries: any[],
-  activationEntries: any[],
-  fragmentEntries?: any[],
+  msgEntries: MsgEntry[],
+  activationEntries: ActivationEntry[],
+  fragmentEntries?: FragmentEntry[],
 ): VFSFile {
   const now = Date.now();
-  const lifelines: Record<string, any> = {};
-  const messages: Record<string, any> = {};
-  const activations: Record<string, any> = {};
-  const interactionFragments: Record<string, any> = {};
+  const lifelines: Record<string, IRLifeline> = {};
+  const messages: Record<string, IRMessage> = {};
+  const activations: Record<string, IRActivation> = {};
+  const interactionFragments: Record<string, IRInteractionFragment> = {};
 
   for (const [llId] of lifelineEntries) {
-    lifelines[llId] = { id: llId, kind: 'LIFELINE', name: llId, participantKind: 'CLASS', alias: llId };
+    lifelines[llId] = buildLifeline(llId);
   }
   for (const m of msgEntries) {
-    messages[m[0]] = {
-      id: m[0], kind: 'MESSAGE', name: `op${m[4] || m[0]}`,
-      messageKind: m[3] || 'SYNC', sourceLifelineId: m[1], targetLifelineId: m[2],
-      sequenceNumber: m[4] || 1, ...(m[5] || {}),
-    };
+    messages[m[0]] = buildMessage(m);
   }
   for (const a of activationEntries) {
-    activations[a[0]] = { id: a[0], kind: 'ACTIVATION', lifelineId: a[1], startMessageId: a[2], endMessageId: a[3] };
+    activations[a[0]] = buildActivation(a);
   }
   if (fragmentEntries) {
     for (const f of fragmentEntries) {
-      interactionFragments[f[0]] = {
-        id: f[0], kind: 'FRAGMENT', name: f[1], fragmentKind: f[1],
-        coveredLifelineIds: f[2], operands: f[3],
-      };
+      interactionFragments[f[0]] = buildFragment(f);
     }
   }
 
@@ -153,9 +215,9 @@ describe('Sequence Diagram E2E — store → builder → persist → reload', ()
     fileId: string,
     standalone: boolean,
     lifelineEntries: [string, number][],
-    msgEntries: any[],
-    activationEntries: any[],
-    fragmentEntries?: any[],
+    msgEntries: MsgEntry[],
+    activationEntries: ActivationEntry[],
+    fragmentEntries?: FragmentEntry[],
   ) {
     it(`${label}: creates lifelines, messages, builds, persists, reloads`, () => {
       // ── 1. Create diagram file with all data ─────────────────────────────
@@ -166,24 +228,17 @@ describe('Sequence Diagram E2E — store → builder → persist → reload', ()
       } else {
         const sm = emptySemanticModel('global-model', 'Global');
         for (const [llId] of lifelineEntries) {
-          sm.lifelines![llId] = { id: llId, kind: 'LIFELINE', name: llId, participantKind: 'CLASS', alias: llId } as any;
+          sm.lifelines![llId] = buildLifeline(llId);
         }
         for (const m of msgEntries) {
-          sm.messages![m[0]] = {
-            id: m[0], kind: 'MESSAGE', name: `op${m[4] || m[0]}`,
-            messageKind: m[3] || 'SYNC', sourceLifelineId: m[1], targetLifelineId: m[2],
-            sequenceNumber: m[4] || 1, ...(m[5] || {}),
-          } as any;
+          sm.messages![m[0]] = buildMessage(m);
         }
         for (const a of activationEntries) {
-          sm.activations![a[0]] = { id: a[0], kind: 'ACTIVATION', lifelineId: a[1], startMessageId: a[2], endMessageId: a[3] } as any;
+          sm.activations![a[0]] = buildActivation(a);
         }
         if (fragmentEntries) {
           for (const f of fragmentEntries) {
-            sm.interactionFragments![f[0]] = {
-              id: f[0], kind: 'FRAGMENT', name: f[1], fragmentKind: f[1],
-              coveredLifelineIds: f[2], operands: f[3],
-            } as any;
+            sm.interactionFragments![f[0]] = buildFragment(f);
           }
         }
         loadProject({ [fileId]: file }, sm);
@@ -275,7 +330,7 @@ describe('Sequence Diagram E2E — store → builder → persist → reload', ()
     ]]],
   );
 
-  function testModel(overrides: Record<string, any>): any {
+  function testModel(overrides: Partial<SemanticModel> = {}): SemanticModel {
     return {
       id: 'test', name: 'test', version: '1',
       packages: {}, classes: {}, interfaces: {}, enums: {}, dataTypes: {},
