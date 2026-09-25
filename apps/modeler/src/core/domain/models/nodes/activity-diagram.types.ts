@@ -28,6 +28,7 @@ export type ActivityDiagramNodeType =
   | 'EXPANSION_REGION'
   | 'INPUT_EXPANSION_NODE'
   | 'OUTPUT_EXPANSION_NODE'
+  | 'ACTIVITY_PARAMETER_NODE'
   | 'ACTIVITY_PARTITION'
   | 'NOTE';
 
@@ -73,6 +74,21 @@ export interface ObjectFlowNode extends BaseDomainNode, Documentable {
   activityId: string;
   partitionId?: string;
   classifierId?: string;
+}
+
+/**
+ * An activity parameter node (v1.1, UML 2.5 §15.5): the object node on the
+ * activity's own boundary through which a parameter value enters (IN) or
+ * leaves (OUT/INOUT) the whole activity. Reuses the object node's
+ * `classifierId` trace for the parameter's type; `parameterDirection`
+ * defaults to IN when unset.
+ */
+export interface ActivityParameterNodeDomain extends BaseDomainNode, Documentable {
+  type: 'ACTIVITY_PARAMETER_NODE';
+  name: string;
+  activityId: string;
+  classifierId?: string;
+  parameterDirection?: 'IN' | 'OUT' | 'INOUT';
 }
 
 /**
@@ -158,6 +174,7 @@ export type ActivityDiagramNode =
   | ObjectFlowNode
   | PinNode
   | ExpansionNode
+  | ActivityParameterNodeDomain
   | StructuredActivityNode
   | ActivityPartitionNode;
 
@@ -188,6 +205,7 @@ export const ACTIVITY_NODE_TYPE_TO_IR: Record<string, ActivityNodeKind> = {
   EXPANSION_REGION: 'EXPANSION_REGION',
   INPUT_EXPANSION_NODE: 'INPUT_EXPANSION_NODE',
   OUTPUT_EXPANSION_NODE: 'OUTPUT_EXPANSION_NODE',
+  ACTIVITY_PARAMETER_NODE: 'ACTIVITY_PARAMETER_NODE',
 };
 
 /** The inverse of `ACTIVITY_NODE_TYPE_TO_IR`. */

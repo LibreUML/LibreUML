@@ -96,6 +96,18 @@ describe('activityDiagramRegistry.factories', () => {
     expect((input as { name?: string }).name).toBe('');
   });
 
+  it('creates an activity parameter node with a default name, facing IN', () => {
+    const p = registry().factories.createNode('ACTIVITY_PARAMETER_NODE');
+    expect(p.type).toBe('ACTIVITY_PARAMETER_NODE');
+    expect((p as { name: string }).name).toBe('Parameter');
+    expect((p as { parameterDirection?: string }).parameterDirection).toBe('IN');
+  });
+
+  it('offers the parameter node in the palette and as a supported node type', () => {
+    expect(registry().supportedNodeTypes).toContain('ACTIVITY_PARAMETER_NODE');
+    expect(registry().tools.nodes.some((t) => t.id === 'activity_parameter_node')).toBe(true);
+  });
+
   it('rejects an edge type it does not own', () => {
     expect(() => registry().factories.createEdge('MESSAGE_SYNC', 'a', 'b')).toThrow(/Unknown Activity/);
   });

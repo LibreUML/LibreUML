@@ -6,7 +6,7 @@ import { useModelStore } from '../../../../store/model.store';
 import { useWorkspaceStore } from '../../../../store/workspace.store';
 import { useVFSStore } from '../../../../store/project-vfs.store';
 import { standaloneModelOps, getLocalModel } from '../../../../store/standaloneModelOps';
-import type { IRActivityNode } from '../../../../core/domain/vfs/vfs.types';
+import type { ActivityParameterDirection, IRActivityNode } from '../../../../core/domain/vfs/vfs.types';
 
 /**
  * Object node properties — the setter half of the node→classifier trace
@@ -19,6 +19,9 @@ import type { IRActivityNode } from '../../../../core/domain/vfs/vfs.types';
  * Classifier…") — it reuses this exact field/modal rather than a parallel
  * one, since "classifier of the element that flows" is the same concept for
  * both; only the modal title reflects which kind is open.
+ *
+ * An activity parameter node (v1.1) also opens this modal: same classifier
+ * picker plus a direction (in/out/inout) select, shown only for that kind.
  */
 export default function ActivityObjectNodePropsModal() {
   const { activeModal, editingId, closeModals } = useUiStore();
@@ -53,11 +56,13 @@ export default function ActivityObjectNodePropsModal() {
   }, [isOpen, editingId, activeTabId]);
 
   const [classifierId, setClassifierId] = useState('');
+  const [direction, setDirection] = useState<ActivityParameterDirection>('IN');
 
   useEffect(() => {
     if (!isOpen) return;
     const node = getNode();
     setClassifierId(node?.classifierId ?? '');
+    setDirection(node?.parameterDirection ?? 'IN');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, editingId]);
 
@@ -65,13 +70,17 @@ export default function ActivityObjectNodePropsModal() {
   const node = getNode();
   if (!node) return null;
 
-  const titlePrefix = node.activityType === 'INPUT_EXPANSION_NODE' || node.activityType === 'OUTPUT_EXPANSION_NODE'
-    ? 'Expansion Node'
-    : 'Object Node';
+  const isParameterNode = node.activityType === 'ACTIVITY_PARAMETER_NODE';
+  const titlePrefix = isParameterNode
+    ? 'Parameter Node'
+    : node.activityType === 'INPUT_EXPANSION_NODE' || node.activityType === 'OUTPUT_EXPANSION_NODE'
+      ? 'Expansion Node'
+      : 'Object Node';
 
   const handleSave = () => {
     if (!editingId) return;
-    const patch = { classifierId: classifierId || undefined };
+    const patch: Partial<IRActivityNode> = { classifierId: classifierId || undefined };
+    if (isParameterNode) patch.parameterDirection = direction;
     if (isStandalone && activeTabId) {
       standaloneModelOps(activeTabId).updateActivityNode(editingId, patch);
     } else {
@@ -107,6 +116,23 @@ export default function ActivityObjectNodePropsModal() {
         </div>
 
         <div className="px-4 py-4 space-y-4">
+          {isParameterNode && (
+            <div>
+              <label className="block text-xs font-semibold text-[#94a3b8] mb-1">Direction</label>
+              <select
+                data-testid="parameter-direction"
+                className="w-full bg-[#0f1623] border border-[#2a3358] rounded px-3 py-1.5
+                           text-sm text-[#e2e8f0] focus:outline-none focus:ring-1 focus:ring-[#7C83FF]"
+                value={direction}
+                onChange={(e) => setDirection(e.target.value as ActivityParameterDirection)}
+                autoFocus
+              >
+                <option value="IN">in</option>
+                <option value="OUT">out</option>
+                <option value="INOUT">inout</option>
+              </select>
+            </div>
+          )}
           <div>
             <label className="block text-xs font-semibold text-[#94a3b8] mb-1">Classifier</label>
             <select
@@ -114,7 +140,7 @@ export default function ActivityObjectNodePropsModal() {
                          text-sm text-[#e2e8f0] focus:outline-none focus:ring-1 focus:ring-[#7C83FF]"
               value={classifierId}
               onChange={(e) => setClassifierId(e.target.value)}
-              autoFocus
+              autoFocus={!isParameterNode}
             >
               <option value="">— none —</option>
               {candidates.map((c) => (

@@ -348,7 +348,11 @@ export type ActivityNodeKind =
   | 'INTERRUPTIBLE_REGION'
   | 'EXPANSION_REGION'
   | 'INPUT_EXPANSION_NODE'
-  | 'OUTPUT_EXPANSION_NODE';
+  | 'OUTPUT_EXPANSION_NODE'
+  | 'ACTIVITY_PARAMETER_NODE';
+
+/** ACTIVITY_PARAMETER_NODE only: which way the activity's parameter faces (UML 2.5 §15.5, ParameterDirectionKind). */
+export type ActivityParameterDirection = 'IN' | 'OUT' | 'INOUT';
 
 /** EXPANSION_REGION only: how many times/how the body runs per input collection (UML 2.5 §15.6.4). */
 export type ActivityExpansionMode = 'PARALLEL' | 'ITERATIVE' | 'STREAM';
@@ -364,11 +368,19 @@ export interface IRActivityNode extends IRElement {
   callsOperationId?: string;
   /**
    * OBJECT_NODE only, or an INPUT_EXPANSION_NODE/OUTPUT_EXPANSION_NODE
-   * (v1.1): classifier of the object/collection element that flows. An
+   * or ACTIVITY_PARAMETER_NODE (v1.1): classifier of the object/collection element that flows. An
    * expansion node reuses this exact field — its "Link Classifier…" menu
    * item opens the same modal an object node does (ADR-0010).
    */
   classifierId?: string;
+  /**
+   * ACTIVITY_PARAMETER_NODE only (v1.1): direction of the activity parameter
+   * this node stands for. Defaults to IN when unset. Real UML puts this on
+   * the `Parameter` the node references; here it lives on the node itself
+   * (same flat conformance cut as pins/expansion nodes, spec §14.3) and the
+   * XMI exporter synthesizes the owned `Parameter` from it.
+   */
+  parameterDirection?: ActivityParameterDirection;
   /** FORK/JOIN only: bar axis. Defaults to HORIZONTAL. */
   barOrientation?: 'HORIZONTAL' | 'VERTICAL';
   /**

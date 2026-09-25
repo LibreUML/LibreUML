@@ -8,7 +8,7 @@ const ok: ValidationResult = { isValid: true };
 
 /** Node types that carry a user-facing name. Control nodes deliberately do not. */
 const NAMED_TYPES = new Set([
-  'ACTION', 'CALL_OPERATION', 'OBJECT_NODE', 'ACTIVITY_PARTITION',
+  'ACTION', 'CALL_OPERATION', 'OBJECT_NODE', 'ACTIVITY_PARAMETER_NODE', 'ACTIVITY_PARTITION',
   'LOOP_NODE', 'CONDITIONAL_NODE', 'SEQUENCE_NODE', 'INTERRUPTIBLE_REGION',
   'EXPANSION_REGION',
 ]);
@@ -30,6 +30,7 @@ const ACTIVITY_NODE_TYPES = new Set([
   // an action — flow enters/exits it as a whole (v1.1).
   'LOOP_NODE', 'CONDITIONAL_NODE', 'SEQUENCE_NODE', 'INTERRUPTIBLE_REGION',
   'EXPANSION_REGION', 'INPUT_EXPANSION_NODE', 'OUTPUT_EXPANSION_NODE',
+  'ACTIVITY_PARAMETER_NODE',
 ]);
 
 /** Handler body types a well-formed exception handler should target (v1.1). */
@@ -44,8 +45,15 @@ const HANDLER_BODY_TYPES = new Set(['ACTION', 'CALL_OPERATION']);
  * restriction that does not actually exist, not a useful conformance cut.
  */
 const OBJECT_FLOW_ENDPOINT_TYPES = new Set([
-  'OBJECT_NODE', 'INPUT_PIN', 'OUTPUT_PIN', 'INPUT_EXPANSION_NODE', 'OUTPUT_EXPANSION_NODE',
+  'OBJECT_NODE', 'ACTIVITY_PARAMETER_NODE', 'INPUT_PIN', 'OUTPUT_PIN',
+  'INPUT_EXPANSION_NODE', 'OUTPUT_EXPANSION_NODE',
 ]);
+
+/** Direction of an activity parameter node; IN when unset (v1.1). */
+function parameterDirectionOf(node: DomainNode): 'IN' | 'OUT' | 'INOUT' | undefined {
+  if (node.type !== 'ACTIVITY_PARAMETER_NODE') return undefined;
+  return (node as { parameterDirection?: 'IN' | 'OUT' | 'INOUT' }).parameterDirection ?? 'IN';
+}
 
 /**
  * Activity diagram rules (A1).
@@ -117,6 +125,23 @@ export class ActivityDiagramValidator implements BaseValidator {
       return {
         isValid: true,
         warnings: ['An output pin produces a value — nothing should flow into it'],
+      };
+    }
+
+    // An activity parameter node has a direction (v1.1): an `in` parameter is
+    // where a value enters the activity, so nothing should flow into it; an
+    // `out` parameter is where one leaves, so nothing should flow out of it.
+    // `inout` is unrestricted. Warning, not error, same as pins.
+    if (parameterDirectionOf(targetNode) === 'IN') {
+      return {
+        isValid: true,
+        warnings: ['An input parameter node receives the activity\'s argument — nothing should flow into it'],
+      };
+    }
+    if (parameterDirectionOf(sourceNode) === 'OUT') {
+      return {
+        isValid: true,
+        warnings: ['An output parameter node returns a value from the activity — nothing should flow out of it'],
       };
     }
 
@@ -207,6 +232,11 @@ export class ActivityDiagramValidator implements BaseValidator {
 
     for (const node of nodes) {
       const label = node.name?.trim() || node.id;
+      // A parameter node that no flow touches contributes nothing to the
+      // activity's signature — it is only ever meaningful wired in (v1.1).
+      if (node.activityType === 'ACTIVITY_PARAMETER_NODE' && incoming(node.id) + outgoing(node.id) === 0) {
+        warnings.push(`Parameter node "${label}" is not connected to any flow`);
+      }
       if (node.activityType === 'DECISION' && outgoing(node.id) < 2) {
         warnings.push(`Decision "${label}" has only one outgoing flow — nothing to branch on`);
       }

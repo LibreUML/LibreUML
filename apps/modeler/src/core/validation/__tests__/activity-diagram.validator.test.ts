@@ -487,4 +487,67 @@ describe('ActivityDiagramValidator.validateActivityStructure', () => {
     });
     expect(v.validateActivityStructure('a1', m).warnings?.[0]).toMatch(/has no input expansion node/i);
   });
+  // Activity parameter node (v1.1): connected-ness is checked model-wide.
+  it('warns when an activity parameter node is not connected to any flow', () => {
+    const m = model({ p: actNode('p', 'ACTIVITY_PARAMETER_NODE', { name: 'amount' }) });
+    expect(v.validateActivityStructure('a1', m).warnings?.[0]).toMatch(/Parameter node "amount" is not connected/);
+  });
+
+  it('is quiet about a parameter node that a flow touches', () => {
+    const m = model(
+      { p: actNode('p', 'ACTIVITY_PARAMETER_NODE', { name: 'amount' }), b: actNode('b', 'ACTION') },
+      { f1: flow('f1', 'p', 'b', 'OBJECT_FLOW') },
+    );
+    expect(v.validateActivityStructure('a1', m).warnings).toBeUndefined();
+  });
+});
+
+describe('ActivityDiagramValidator — activity parameter nodes (v1.1)', () => {
+  const param = (direction: 'IN' | 'OUT' | 'INOUT' | undefined, id = 'p') =>
+    node('ACTIVITY_PARAMETER_NODE', { id, name: 'amount', parameterDirection: direction });
+
+  it('accepts an object flow out of an input parameter into an action', () => {
+    const r = v.validateConnection(param('IN'), node('ACTION', { id: 'a' }), 'OBJECT_FLOW');
+    expect(r.isValid).toBe(true);
+    expect(r.warnings).toBeUndefined();
+  });
+
+  it('accepts an object flow from an action into an output parameter', () => {
+    const r = v.validateConnection(node('ACTION', { id: 'a' }), param('OUT'), 'OBJECT_FLOW');
+    expect(r.isValid).toBe(true);
+    expect(r.warnings).toBeUndefined();
+  });
+
+  it('warns about a flow INTO an input parameter node', () => {
+    const r = v.validateConnection(node('ACTION', { id: 'a' }), param('IN'), 'OBJECT_FLOW');
+    expect(r.isValid).toBe(true);
+    expect(r.warnings?.[0]).toMatch(/input parameter node/i);
+  });
+
+  it('treats an unset direction as IN', () => {
+    const r = v.validateConnection(node('ACTION', { id: 'a' }), param(undefined), 'OBJECT_FLOW');
+    expect(r.warnings?.[0]).toMatch(/input parameter node/i);
+  });
+
+  it('warns about a flow OUT of an output parameter node', () => {
+    const r = v.validateConnection(param('OUT'), node('ACTION', { id: 'a' }), 'OBJECT_FLOW');
+    expect(r.isValid).toBe(true);
+    expect(r.warnings?.[0]).toMatch(/output parameter node/i);
+  });
+
+  it('does not restrict an inout parameter node in either direction', () => {
+    expect(v.validateConnection(param('INOUT'), node('ACTION', { id: 'a' }), 'OBJECT_FLOW').warnings).toBeUndefined();
+    expect(v.validateConnection(node('ACTION', { id: 'a' }), param('INOUT'), 'OBJECT_FLOW').warnings).toBeUndefined();
+  });
+
+  it('counts as an object-flow endpoint, so two-actions-only warning does not fire', () => {
+    const r = v.validateConnection(param('IN'), node('ACTION', { id: 'a' }), 'OBJECT_FLOW');
+    expect(r.warnings).toBeUndefined();
+  });
+
+  it('warns when a parameter node has no name', () => {
+    const r = v.validateNode(node('ACTIVITY_PARAMETER_NODE', { name: '' }));
+    expect(r.warnings?.length).toBeGreaterThan(0);
+    expect(v.validateNode(node('ACTIVITY_PARAMETER_NODE', { name: 'amount' })).warnings).toBeUndefined();
+  });
 });

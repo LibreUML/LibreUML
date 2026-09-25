@@ -699,7 +699,11 @@ export const useDiagramMenus = ({
         // double-click (usePartitionDrop/PartitionShape), not through this menu.
         const isActivityPartitionType = effectiveType === "ACTIVITY_PARTITION";
         const isActivityActionType = effectiveType === "ACTION" || effectiveType === "CALL_OPERATION";
-        const isActivityObjectNodeType = effectiveType === "OBJECT_NODE";
+        // An activity parameter node (v1.1) is an object node with a direction:
+        // same rename gate and same modal (classifier + direction), only the
+        // menu item's label differs.
+        const isActivityParameterNodeType = effectiveType === "ACTIVITY_PARAMETER_NODE";
+        const isActivityObjectNodeType = effectiveType === "OBJECT_NODE" || isActivityParameterNodeType;
         const isTrueActivityPinType = effectiveType === "INPUT_PIN" || effectiveType === "OUTPUT_PIN";
         // Expansion nodes (v1.1) share the pin's shape/interaction (small
         // square, owned, rename-only) but trace to a classifier, not a
@@ -857,7 +861,9 @@ export const useDiagramMenus = ({
           const elementId = getElementId(nodeId);
           if (elementId) {
             baseOptions.push({
-              label: t("contextMenu.node.linkClassifier"),
+              label: isActivityParameterNodeType
+                ? t("contextMenu.node.editParameterNode")
+                : t("contextMenu.node.linkClassifier"),
               onClick: () => useUiStore.getState().openActivityObjectNodeProps(elementId),
             });
           }

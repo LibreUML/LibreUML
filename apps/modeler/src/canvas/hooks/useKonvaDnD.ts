@@ -345,6 +345,29 @@ export const VFS_DROP_CONFIG: Partial<Record<stereotype, DropConfig>> = {
       applyCreateActivityNode(lm, id, { activityType: 'OBJECT_NODE', activityId, name });
     },
   },
+  // Activity parameter node (v1.1): an object node on the activity's boundary,
+  // created facing IN — direction is edited afterwards in its properties modal.
+  activity_parameter_node: {
+    getNextName: (model) =>
+      getNextVFSName(
+        Object.values(model.activityNodes ?? {})
+          .filter((n) => n.activityType === 'ACTIVITY_PARAMETER_NODE')
+          .map((n) => n.name),
+        'Parameter',
+      ),
+    applyToModelDraft: (m, id, name, _isExternal, existingViewNodes = []) => {
+      const activityId = getOrCreateActivityId(m, existingViewNodes, 'Activity');
+      applyCreateActivityNode(m, id, {
+        activityType: 'ACTIVITY_PARAMETER_NODE', activityId, name, parameterDirection: 'IN',
+      });
+    },
+    applyToLocalModelDraft: (lm, id, name, existingViewNodes = []) => {
+      const activityId = getOrCreateActivityId(lm, existingViewNodes, 'Activity');
+      applyCreateActivityNode(lm, id, {
+        activityType: 'ACTIVITY_PARAMETER_NODE', activityId, name, parameterDirection: 'IN',
+      });
+    },
+  },
   // ── Activity Diagram (A3) ────────────────────────────────────────────────
   activity_partition: {
     getNextName: (model: SemanticModel) =>

@@ -179,6 +179,7 @@ export function resolvedElementToDomainNode(
         containerId: n.containerId,
         testExpression: n.testExpression,
         mode: n.mode,
+        parameterDirection: n.parameterDirection,
         documentation: n.documentation,
         createdAt: NOW,
         updatedAt: NOW,

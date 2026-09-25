@@ -204,6 +204,36 @@ describe('buildActivityDiagramXmi', () => {
     expect(xmi).not.toContain(' type="');
   });
 
+  it('emits an activity parameter node referencing an owned Parameter that carries direction and type', () => {
+    const cls: IRClass = { id: 'c1', kind: 'CLASS', name: 'Money', attributeIds: [], operationIds: [] };
+    const model = makeModel({
+      activities: { act1: activity('act1') },
+      classes: { c1: cls },
+      activityNodes: {
+        p1: node('p1', 'ACTIVITY_PARAMETER_NODE', { name: 'amount', parameterDirection: 'OUT', classifierId: 'c1' }),
+        p2: node('p2', 'ACTIVITY_PARAMETER_NODE', { name: 'legacy' }),
+      },
+    });
+    const xmi = buildActivityDiagramXmi(model, null, 'Flow');
+    const doc = new DOMParser().parseFromString(xmi, 'application/xml');
+    expect(doc.getElementsByTagName('parsererror').length).toBe(0);
+
+    expect(xmi).toContain('xmi:type="uml:ActivityParameterNode"');
+    expect(xmi).toContain('parameter="p1_param"');
+    expect(xmi).toContain('<ownedParameter xmi:type="uml:Parameter" xmi:id="p1_param" name="amount" direction="out" type="c1"/>');
+    // Unset direction exports as `in`.
+    expect(xmi).toContain('xmi:id="p2_param" name="legacy" direction="in"');
+  });
+
+  it('skip case: a dangling classifierId on a parameter node omits the type attribute everywhere', () => {
+    const model = makeModel({
+      activities: { act1: activity('act1') },
+      activityNodes: { p1: node('p1', 'ACTIVITY_PARAMETER_NODE', { classifierId: 'ghost' }) },
+    });
+    const xmi = buildActivityDiagramXmi(model, null, 'Flow');
+    expect(xmi).not.toContain('ghost');
+  });
+
   it('emits an interrupting flow with an interrupts idref when its source sits inside a region', () => {
     const rel: IRRelation = { id: 'r1', kind: 'CONTROL_FLOW', sourceId: 'a', targetId: 'b', isInterrupting: true };
     const model = makeModel({

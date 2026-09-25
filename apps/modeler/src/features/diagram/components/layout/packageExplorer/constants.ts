@@ -33,6 +33,7 @@ export const CLASS_ICON_CONFIG: Record<stereotype, { bg: string; letter: string;
   sequence_node: { bg: "#0EA5E9", letter: "S", color: "#FFFFFF" },
   interruptible_region: { bg: "#0EA5E9", letter: "R", color: "#FFFFFF" },
   expansion_region: { bg: "#0EA5E9", letter: "X", color: "#FFFFFF" },
+  activity_parameter_node: { bg: "#0EA5E9", letter: "P", color: "#FFFFFF" },
 };
 
 export const THEME_COLORS = {

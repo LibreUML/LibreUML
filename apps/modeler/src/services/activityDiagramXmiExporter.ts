@@ -77,11 +77,15 @@ const NODE_METACLASS: Record<ActivityNodeKind, string> = {
   // both map to it here, direction is conveyed by the domain-node type only.
   INPUT_EXPANSION_NODE: 'uml:ExpansionNode',
   OUTPUT_EXPANSION_NODE: 'uml:ExpansionNode',
+  // ActivityParameterNode (v1.1): references an owned `uml:Parameter` on the
+  // Activity (see serializeOwnedParameter) — that is where UML keeps the
+  // direction, not on the node.
+  ACTIVITY_PARAMETER_NODE: 'uml:ActivityParameterNode',
 };
 
 /** Node types whose `classifierId` trace is emitted as ObjectNode.type (A6.1/v1.1). */
 const CLASSIFIER_TRACED_TYPES = new Set<ActivityNodeKind>([
-  'OBJECT_NODE', 'INPUT_EXPANSION_NODE', 'OUTPUT_EXPANSION_NODE',
+  'OBJECT_NODE', 'INPUT_EXPANSION_NODE', 'OUTPUT_EXPANSION_NODE', 'ACTIVITY_PARAMETER_NODE',
 ]);
 
 /** Resolves an id against every classifier/actor collection a `represents` trace can point to. */
@@ -128,6 +132,13 @@ function serializeNode(node: IRActivityNode, model: SemanticModel): string {
     }
   }
 
+  // ACTIVITY_PARAMETER_NODE: points at the Parameter serializeOwnedParameter
+  // synthesizes from this same node (always present — unlike the classifier
+  // trace, it can never dangle).
+  if (node.activityType === 'ACTIVITY_PARAMETER_NODE') {
+    attrs.push(`parameter="${xmiId(node.id)}_param"`);
+  }
+
   // EXPANSION_REGION: mode (UML 2.5.1 ExpansionRegion.mode, ExpansionKind
   // literals are lowercase) — always emitted, defaulting the same way the
   // model does when unset.
@@ -136,6 +147,25 @@ function serializeNode(node: IRActivityNode, model: SemanticModel): string {
   }
 
   return `    <node ${attrs.filter(Boolean).join(' ')}/>`;
+}
+
+/**
+ * The `uml:Parameter` an ActivityParameterNode stands for (UML 2.5.1 §15.5):
+ * owned by the Activity, carrying the direction and type. The IR keeps both
+ * on the node itself, so this is derived, not stored — same dangling-trace
+ * rule for `type` as the node's own classifier trace.
+ */
+function serializeOwnedParameter(node: IRActivityNode, model: SemanticModel): string {
+  const attrs = [
+    `xmi:type="uml:Parameter"`,
+    `xmi:id="${xmiId(node.id)}_param"`,
+    node.name ? `name="${esc(node.name)}"` : '',
+    `direction="${(node.parameterDirection ?? 'IN').toLowerCase()}"`,
+  ];
+  if (node.classifierId && classifierName(model, node.classifierId) !== undefined) {
+    attrs.push(`type="${xmiId(node.classifierId)}"`);
+  }
+  return `    <ownedParameter ${attrs.filter(Boolean).join(' ')}/>`;
 }
 
 function serializePartition(partition: IRActivityPartition, model: SemanticModel): string {
@@ -268,6 +298,9 @@ export function buildActivityDiagramXmi(
     `  <packagedElement xmi:type="uml:Activity" xmi:id="${xmiId(activityId)}" name="${esc(activityName)}">`,
   );
 
+  for (const n of nodes) {
+    if (n.activityType === 'ACTIVITY_PARAMETER_NODE') lines.push(serializeOwnedParameter(n, model));
+  }
   for (const p of partitions) lines.push(serializePartition(p, model));
   for (const n of nodes) lines.push(serializeNode(n, model));
   for (const f of flows) lines.push(serializeFlow(f, nodesById));

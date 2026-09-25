@@ -17,6 +17,12 @@ const MIN_W = 120;
 const MIN_H = 48;
 /** Past this the label wraps instead of stretching the box across the canvas. */
 const MAX_W = 240;
+const TAG_FONT = 10;
+
+/** «in» / «out» / «inout» — the direction tag an activity parameter node carries (v1.1). */
+function parameterDirectionTag(dir: ActivityObjectNodeViewModel['parameterDirection']): string | undefined {
+  return dir ? `«${dir.toLowerCase()}»` : undefined;
+}
 
 /**
  * Sizes to its label, within bounds, unless the user dragged it to a size of
@@ -37,7 +43,8 @@ export function getObjectNodeShapeSize(
   const usable = width - PAD_X * 2;
   const lines = usable > 0 ? Math.max(1, Math.ceil(labelWidth / usable)) : 1;
   const subtitleHeight = vm.classifierName ? fontSize : 0;
-  const height = Math.max(MIN_H, lines * (fontSize + 4) + PAD_Y * 2 + subtitleHeight);
+  const tagHeight = vm.parameterDirection ? TAG_FONT + 4 : 0;
+  const height = Math.max(MIN_H, lines * (fontSize + 4) + PAD_Y * 2 + subtitleHeight + tagHeight);
 
   return { width: vm.manualWidth ?? width, height: vm.manualHeight ?? height };
 }
@@ -60,6 +67,9 @@ interface ObjectNodeShapeProps {
 }
 
 /**
+ * (Also draws an ActivityParameterNode, UML 2.5 §15.5 — the same rectangle
+ * plus a «in»/«out»/«inout» tag, when `parameterDirection` is set.)
+ *
  * UML 2.5 §15.3 ObjectNode — a rectangle holding a value as it flows between
  * actions (v1.1). Square corners are the one visual difference from
  * `ActionShape`'s rounded box, so the two read as distinct node kinds at a
@@ -86,6 +96,8 @@ export default function ObjectNodeShape({
   const fontSize = vm.fontSizeOverride ?? LABEL_FONT;
   const fontFamily = vm.fontFamilyOverride ?? FONT_SANS;
   const subtitle = vm.classifierName ? `[${vm.classifierName}]` : undefined;
+  const tag = parameterDirectionTag(vm.parameterDirection);
+  const tagOffset = tag ? TAG_FONT + 4 : 0;
 
   return (
     <Group
@@ -124,9 +136,24 @@ export default function ObjectNodeShape({
         dash={borderDash(vm.borderStyleOverride, vm.borderWidthOverride ?? 1.5)}
         perfectDrawEnabled={false}
       />
+      {tag && (
+        <Text
+          x={PAD_X}
+          y={6}
+          width={W - PAD_X * 2}
+          text={tag}
+          fontSize={TAG_FONT}
+          fontFamily={fontFamily}
+          fill={SUBTEXT}
+          align="center"
+          wrap="none"
+          listening={false}
+          perfectDrawEnabled={false}
+        />
+      )}
       <Text
         x={PAD_X}
-        y={subtitle ? PAD_Y : (H - fontSize) / 2}
+        y={subtitle ? PAD_Y + tagOffset : (H - fontSize + tagOffset) / 2}
         width={W - PAD_X * 2}
         height={subtitle ? undefined : fontSize}
         text={vm.label}
