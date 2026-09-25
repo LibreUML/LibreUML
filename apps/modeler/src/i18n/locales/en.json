@@ -145,6 +145,7 @@
       "sequenceNode": "Sequence",
       "interruptibleRegion": "Interruptible Region",
       "expansionRegion": "Expansion Region",
+      "activityParameterNode": "Parameter",
       "activityPartition": "Partition"
     },
     "connections": {
@@ -252,7 +253,8 @@
       "editTestCondition": "Edit Test Condition…",
       "editExpansionMode": "Edit Mode…",
       "addInputExpansionNode": "Add Input Expansion Node",
-      "addOutputExpansionNode": "Add Output Expansion Node"
+      "addOutputExpansionNode": "Add Output Expansion Node",
+      "editParameterNode": "Edit Parameter…"
     },
     "edge": {
       "reverse": "Reverse Direction ⇄",

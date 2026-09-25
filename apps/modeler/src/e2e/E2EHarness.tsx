@@ -107,6 +107,8 @@ export interface E2EActivitySpec {
     ownerRegionId?: string;
     /** OBJECT_NODE, or an expansion node (v1.1): classifier trace (ADR-0010). */
     classifierId?: string;
+    /** ACTIVITY_PARAMETER_NODE only (v1.1). Defaults to IN when unset. */
+    parameterDirection?: 'IN' | 'OUT' | 'INOUT';
     /** Structured nodes (v1.1): container geometry, defaults to SN_DEFAULT_W/H. */
     width?: number;
     height?: number;
@@ -285,6 +287,7 @@ function buildActivityProject(spec: E2EActivitySpec): { project: LibreUMLProject
       ...(n.mode ? { mode: n.mode } : {}),
       ...(n.ownerRegionId ? { ownerRegionId: n.ownerRegionId } : {}),
       ...(n.classifierId ? { classifierId: n.classifierId } : {}),
+      ...(n.parameterDirection ? { parameterDirection: n.parameterDirection } : {}),
     };
   }
   for (const f of spec.flows ?? []) {

@@ -124,6 +124,22 @@ describe('resolvedElementToDomainNode', () => {
     expect(activityDiagramValidator.validateNode(ownedNode!).warnings).toBeUndefined();
   });
 
+  it('ACTIVITY_NODE: passes parameterDirection through for an activity parameter node', () => {
+    const n: IRActivityNode = {
+      id: 'p1', kind: 'ACTIVITY_NODE', activityType: 'ACTIVITY_PARAMETER_NODE', name: 'result',
+      activityId: 'act1', parameterDirection: 'OUT',
+    };
+    const act: IRActivityNode = { id: 'a1', kind: 'ACTIVITY_NODE', activityType: 'ACTION', name: 'Pay', activityId: 'act1' };
+    const model = baseModel({ activityNodes: { p1: n, a1: act } });
+    const node = resolvedElementToDomainNode({ element: n, kind: 'ACTIVITY_NODE' }, model);
+    const action = resolvedElementToDomainNode({ element: act, kind: 'ACTIVITY_NODE' }, model);
+    expect(node?.type).toBe('ACTIVITY_PARAMETER_NODE');
+    // Proof the field landed on the DomainNode: the validator's direction rule
+    // reads it — a flow OUT of an `out` parameter warns, one out of `in` does not.
+    expect(activityDiagramValidator.validateConnection(node!, action!, 'OBJECT_FLOW').warnings?.[0])
+      .toMatch(/output parameter node/i);
+  });
+
   it('ACTIVITY_NODE: passes mode through for an expansion region', () => {
     const n: IRActivityNode = { id: 'r1', kind: 'ACTIVITY_NODE', activityType: 'EXPANSION_REGION', name: 'Per item', activityId: 'act1', mode: 'STREAM' };
     const model = baseModel({ activityNodes: { r1: n } });

@@ -16,7 +16,9 @@ export type stereotype = "class" | "interface" | "abstract" | "note" | "enum" | 
   // v1.1: the expansion region tool id. No tool id for its expansion nodes —
   // same reasoning as pins never getting one — they are created from the
   // region's own context menu instead.
-  | "expansion_region";
+  | "expansion_region"
+  // v1.1: the activity parameter node tool id.
+  | "activity_parameter_node";
 export type UmlRelationType =
   | "association"
   | "inheritance"

@@ -407,6 +407,12 @@ export interface ActivityObjectNodeViewModel {
   manualWidth?: number;
   manualHeight?: number;
   classifierName?: string;
+  /**
+   * Set only for an activity parameter node (v1.1) — it shares this brand and
+   * shape with the plain object node (same rectangle, same classifier trace),
+   * differing by an «in»/«out»/«inout» tag. Absent = ordinary object node.
+   */
+  parameterDirection?: 'IN' | 'OUT' | 'INOUT';
   colorOverride?: string;
   borderWidthOverride?: number;
   borderStyleOverride?: 'solid' | 'dashed' | 'dotted';

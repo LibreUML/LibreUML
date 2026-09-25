@@ -31,6 +31,7 @@ interface Surface {
   loopNode: (model: SemanticModel, id: string, name: string, existingViewNodes: { elementId: string }[]) => void;
   interruptibleRegion: (model: SemanticModel, id: string, name: string, existingViewNodes: { elementId: string }[]) => void;
   expansionRegion: (model: SemanticModel, id: string, name: string, existingViewNodes: { elementId: string }[]) => void;
+  parameterNode: (model: SemanticModel, id: string, name: string, existingViewNodes: { elementId: string }[]) => void;
 }
 
 const SURFACES: Surface[] = [
@@ -48,6 +49,8 @@ const SURFACES: Surface[] = [
       VFS_DROP_CONFIG.interruptible_region!.applyToModelDraft(m, id, name, undefined, vns),
     expansionRegion: (m, id, name, vns) =>
       VFS_DROP_CONFIG.expansion_region!.applyToModelDraft(m, id, name, undefined, vns),
+    parameterNode: (m, id, name, vns) =>
+      VFS_DROP_CONFIG.activity_parameter_node!.applyToModelDraft(m, id, name, undefined, vns),
   },
   {
     name: 'applyToLocalModelDraft (standalone)',
@@ -60,6 +63,8 @@ const SURFACES: Surface[] = [
       VFS_DROP_CONFIG.interruptible_region!.applyToLocalModelDraft(m, id, name, vns),
     expansionRegion: (m, id, name, vns) =>
       VFS_DROP_CONFIG.expansion_region!.applyToLocalModelDraft(m, id, name, vns),
+    parameterNode: (m, id, name, vns) =>
+      VFS_DROP_CONFIG.activity_parameter_node!.applyToLocalModelDraft(m, id, name, vns),
   },
 ];
 
@@ -237,6 +242,29 @@ describe.each(SURFACES)('VFS_DROP_CONFIG — activity tools — $name', (surface
     const activityId = model.activityNodes!['n1'].activityId;
 
     surface.expansionRegion(model, 'n2', 'Per-item region', [{ elementId: 'n1' }]);
+
+    expect(model.activityNodes!['n2'].activityId).toBe(activityId);
+    expect(Object.keys(model.activities!)).toHaveLength(1);
+  });
+
+  // v1.1 — activity parameter node creation: an object node facing IN.
+  it('parameterNode: creates an ACTIVITY_PARAMETER_NODE facing IN, with a fresh Activity when the diagram has none', () => {
+    const model = emptyModel();
+    surface.parameterNode(model, 'n1', 'amount', []);
+
+    expect(model.activityNodes!['n1']).toMatchObject({
+      activityType: 'ACTIVITY_PARAMETER_NODE', name: 'amount', parameterDirection: 'IN',
+    });
+    const activityId = model.activityNodes!['n1'].activityId;
+    expect(model.activities![activityId]).toBeTruthy();
+  });
+
+  it('parameterNode: reuses the Activity a sibling node in the same diagram already belongs to', () => {
+    const model = emptyModel();
+    surface.action(model, 'n1', 'Action 1', []);
+    const activityId = model.activityNodes!['n1'].activityId;
+
+    surface.parameterNode(model, 'n2', 'amount', [{ elementId: 'n1' }]);
 
     expect(model.activityNodes!['n2'].activityId).toBe(activityId);
     expect(Object.keys(model.activities!)).toHaveLength(1);

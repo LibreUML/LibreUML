@@ -192,6 +192,7 @@ function makeObjectNode(
   classifierName: string | undefined,
   onRename: (name: string) => void,
 ) {
+  const isParameterNode = node.activityType === 'ACTIVITY_PARAMETER_NODE';
   const vm: ActivityObjectNodeViewModel = {
     __brand: 'activityObjectNode',
     id: viewNode.id,
@@ -200,6 +201,7 @@ function makeObjectNode(
     manualWidth: viewNode.width,
     manualHeight: viewNode.height,
     classifierName,
+    parameterDirection: isParameterNode ? (node.parameterDirection ?? 'IN') : undefined,
     colorOverride: viewNode.color,
     borderWidthOverride: viewNode.borderWidth,
     borderStyleOverride: viewNode.borderStyle,
@@ -547,7 +549,9 @@ export function buildActivityDiagramNodes(ctx: NodeBuilderContext) {
       return makeForkJoinNode(viewNode, forkJoinKind, node.barOrientation ?? 'HORIZONTAL', diagramView.nodes);
     }
 
-    if (node.activityType === 'OBJECT_NODE') {
+    // An activity parameter node (v1.1) is an object node plus a direction tag —
+    // same brand/shape/classifier trace, so it takes the same branch.
+    if (node.activityType === 'OBJECT_NODE' || node.activityType === 'ACTIVITY_PARAMETER_NODE') {
       const onRename = (name: string) => {
         if (isStandalone && activeTabId) {
           standaloneModelOps(activeTabId).updateActivityNode(viewNode.elementId, { name });

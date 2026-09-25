@@ -175,6 +175,29 @@ describe('buildActivityDiagramNodes', () => {
     expect((built.data as ActivityObjectNodeViewModel).classifierName).toBeUndefined();
   });
 
+  it('builds an activity parameter node as an object-node view model carrying its direction and classifier (v1.1)', () => {
+    const m = model({
+      classes: { c1: { id: 'c1', kind: 'CLASS', name: 'Money', attributeIds: [], operationIds: [] } } as never,
+      activityNodes: {
+        p1: irNode('p1', 'ACTIVITY_PARAMETER_NODE', { name: 'amount', parameterDirection: 'OUT', classifierId: 'c1' }),
+        p2: irNode('p2', 'ACTIVITY_PARAMETER_NODE', { name: 'legacy' }),
+        o1: irNode('o1', 'OBJECT_NODE', { name: 'order' }),
+      } as never,
+    });
+
+    const built = buildActivityDiagramNodes(
+      ctx(m, view([{ id: 'v1', elementId: 'p1' }, { id: 'v2', elementId: 'p2' }, { id: 'v3', elementId: 'o1' }])),
+    );
+
+    const [out, unset, plain] = built.map((b) => b.data as ActivityObjectNodeViewModel);
+    expect(out.__brand).toBe('activityObjectNode');
+    expect(out.parameterDirection).toBe('OUT');
+    expect(out.classifierName).toBe('Money');
+    // Unset direction defaults to IN; a plain object node carries no direction at all.
+    expect(unset.parameterDirection).toBe('IN');
+    expect(plain.parameterDirection).toBeUndefined();
+  });
+
   it('builds input/output pins carrying their kind and owner (A6.2)', () => {
     const m = model({
       activityNodes: {
