@@ -26,7 +26,7 @@ You need a commercial license if you want to:
 
 ## How to obtain a commercial license
 
-Contact: **[Your Email / Contact Page]**
+Contact: **[abre un issue en LibreUML/LibreUML](https://github.com/LibreUML/LibreUML/issues/new) con la etiqueta `commercial-license`**
 
 Please include a brief description of your use case and we will provide a quote.
 
