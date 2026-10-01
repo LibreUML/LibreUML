@@ -6,6 +6,7 @@ import {
   Info,
   Rocket,
   Keyboard,
+  Star,
 } from "lucide-react";
 import { MenubarTrigger } from "../../../../../components/ui/menubar/MenubarTrigger";
 import { MenubarItem } from "../../../../../components/ui/menubar/MenubarItem";
@@ -21,6 +22,7 @@ export function HelpMenuContent({ onOpenDocs }: { onOpenDocs: () => void }) {
   const openFeedback = useUiStore((s) => s.openFeedback);
   const reportIssue = () => openFeedback();
   const openRoadmap = () => window.open("https://github.com/LibreUML/LibreUML/blob/main/roadmap.md", "_blank", "noopener,noreferrer");
+  const openStarRepo = () => window.open("https://github.com/LibreUML/LibreUML", "_blank", "noopener,noreferrer");
 
   const showAbout = () => {
     alert("LibreUML v0.7.0\n\nThe Open Source UML Editor for Students.\nDeveloped with ❤️ in React + Electron.");
@@ -60,6 +62,12 @@ export function HelpMenuContent({ onOpenDocs }: { onOpenDocs: () => void }) {
         label={t("menubar.help.roadmap")}
         icon={<Map className="w-4 h-4" />}
         onClick={openRoadmap}
+      />
+
+      <MenubarItem
+        label={t("menubar.help.starRepo")}
+        icon={<Star className="w-4 h-4" />}
+        onClick={openStarRepo}
       />
 
       <MenubarItem
