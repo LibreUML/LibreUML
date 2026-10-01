@@ -10,5 +10,6 @@ Fixes #
 
 - [ ] `npm run test` passes
 - [ ] `npm run lint` shows no new warnings
+- [ ] I wrote or reviewed every change and can explain it (AI assistance is fine)
 - [ ] The base branch of this PR is `contributors`
 - [ ] I have read and agree to the [contributor license terms](https://github.com/LibreUML/LibreUML/blob/main/CONTRIBUTING.md#contributor-license-terms) (AGPL-3.0 + relicensing grant; I keep my copyright and authorship)

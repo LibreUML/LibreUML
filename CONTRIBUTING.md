@@ -166,6 +166,18 @@ git checkout -b feature/my-new-feature upstream/contributors
 4. Describe your changes clearly.  
    📸 **Screenshots are highly appreciated for UI changes!**
 
+### Human contributions only
+
+Every contribution must come from a **person who takes responsibility for it**. Using AI tools to help you write code is fine; unattended automation is not. A bot also cannot accept the [contributor license terms](#contributor-license-terms).
+
+We may close, without further explanation, pull requests and issue comments that look automated or unreviewed. For example:
+
+- PRs that only "claim" or reserve an issue (placeholder files, "I'll work on this" with no code).
+- Templated comments or PRs posted in bulk across many repositories.
+- Changes the author did not review or cannot explain.
+
+If we closed yours by mistake, just reply and tell us. We'll take another look.
+
 ---
 
 Thank you for building with us! If you like LibreUML, a ⭐ on the repo and sharing it with friends or classmates helps us a lot. ❤️  

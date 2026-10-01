@@ -5,10 +5,13 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 ![Tests](https://img.shields.io/badge/tests-373%20passing-brightgreen)
 ![Stack](https://img.shields.io/badge/stack-React%20%7C%20Konva%20%7C%20TypeScript-blueviolet)
+[![GitHub stars](https://img.shields.io/github/stars/LibreUML/LibreUML?style=social)](https://github.com/LibreUML/LibreUML/stargazers)
 
 **Plataforma open source de modelado de arquitectura de software.**
 
 LibreUML nació para hacer que el modelado visual sea accesible, moderno y útil de verdad — sin barreras de precio, sin instalación obligatoria, sin depender de herramientas que llevan 20 años sin actualizarse.
+
+> ⭐ Si LibreUML te resulta útil, **dale una estrella al repo** y compártelo con tus compañeros: es la forma más fácil de ayudarnos a crecer.
 
 ---
 
@@ -161,7 +164,7 @@ LibreUML/
 
 LibreUML es un proyecto open source. Las contribuciones son bienvenidas.
 
-Lee la guía de [CONTRIBUTING.md](CONTRIBUTING.md). Antes de arrancar con algo grande, abre un issue para alinear el enfoque. El proyecto tiene convenciones de commits y de ramas documentadas.
+Lee la guía de [CONTRIBUTING.md](CONTRIBUTING.md). Antes de arrancar con algo grande, abre un issue para alinear el enfoque. El proyecto tiene convenciones de commits y de ramas documentadas: los PRs externos se abren contra la rama `contributors`, no contra `main`.
 
 ---
 
