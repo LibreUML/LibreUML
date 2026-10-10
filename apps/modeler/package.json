@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dist": "npm run build && electron-builder",
+    "electron:compile": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', '{\\\"type\\\": \\\"commonjs\\\"}')\"",
+    "dist": "npm run build && npm run electron:compile && electron-builder",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none vite\" \"npm run electron:build -- --watch\"",
     "electron:build": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', '{\\\"type\\\": \\\"commonjs\\\"}')\" && electron .",
     "test": "vitest",
@@ -76,6 +77,7 @@
   "build": {
     "appId": "com.libreuml.app",
     "productName": "LibreUML",
+    "electronVersion": "39.8.9",
     "directories": {
       "output": "release"
     },
