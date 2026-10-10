@@ -2,6 +2,14 @@
   "name": "@libreuml/modeler",
   "private": true,
   "version": "0.10.0",
+  "description": "LibreUML Modeler — free UML modeling in the browser and desktop",
+  "author": "LibreUML",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LibreUML/LibreUML.git",
+    "directory": "apps/modeler"
+  },
   "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
@@ -10,7 +18,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron:compile": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', '{\\\"type\\\": \\\"commonjs\\\"}')\"",
-    "dist": "npm run build && npm run electron:compile && electron-builder",
+    "dist": "npm run build && npm run electron:compile && electron-builder --publish never",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none vite\" \"npm run electron:build -- --watch\"",
     "electron:build": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', '{\\\"type\\\": \\\"commonjs\\\"}')\" && electron .",
     "test": "vitest",
