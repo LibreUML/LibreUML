@@ -34,13 +34,28 @@ async function seed(page: Page) {
   });
 }
 
+
+/**
+ * Right-clicks until the menu item shows up. The first right-click right
+ * after seeding can race Konva's hit-canvas redraw (§ hit-canvas freshness —
+ * a residual window of a few frames under load), so retry instead of
+ * assuming the very first click landed on the shape.
+ */
+async function rightClickUntilVisible(page: Page, x: number, y: number, name: string) {
+  const item = page.getByRole('button', { name });
+  await expect(async () => {
+    await page.mouse.click(x, y, { button: 'right' });
+    await expect(item).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
+  return item;
+}
+
 test.describe('Delete from Model — project-backed activity diagram', () => {
   test.beforeEach(async ({ page }) => seed(page));
 
   test('the menu offers "Delete from Model" (project-backed only, unlike standalone)', async ({ page }) => {
     const node = (await rect(page, 'vn-n1'))!;
-    await page.mouse.click(node.x + node.width / 2, node.y + node.height / 2, { button: 'right' });
-    await expect(page.getByRole('button', { name: 'Delete from Model' })).toBeVisible();
+    await rightClickUntilVisible(page, node.x + node.width / 2, node.y + node.height / 2, 'Delete from Model');
   });
 
   test('deleting an action removes the ViewNode AND the IR node from the shared model', async ({ page }) => {
@@ -48,8 +63,8 @@ test.describe('Delete from Model — project-backed activity diagram', () => {
     expect(before['n1']).toBeTruthy();
 
     const node = (await rect(page, 'vn-n1'))!;
-    await page.mouse.click(node.x + node.width / 2, node.y + node.height / 2, { button: 'right' });
-    await page.getByRole('button', { name: 'Delete from Model' }).click();
+    const item = await rightClickUntilVisible(page, node.x + node.width / 2, node.y + node.height / 2, 'Delete from Model');
+    await item.click();
 
     await expect.poll(async () => {
       const nodes = await dump(page, 'activityNodes') as Record<string, unknown>;
