@@ -5,10 +5,13 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 ![Tests](https://img.shields.io/badge/tests-373%20passing-brightgreen)
 ![Stack](https://img.shields.io/badge/stack-React%20%7C%20Konva%20%7C%20TypeScript-blueviolet)
+[![GitHub stars](https://img.shields.io/github/stars/LibreUML/LibreUML?style=social)](https://github.com/LibreUML/LibreUML/stargazers)
 
 **Plataforma open source de modelado de arquitectura de software.**
 
 LibreUML nació para hacer que el modelado visual sea accesible, moderno y útil de verdad — sin barreras de precio, sin instalación obligatoria, sin depender de herramientas que llevan 20 años sin actualizarse.
+
+> ⭐ Si LibreUML te resulta útil, **dale una estrella al repo** y compártelo con tus compañeros: es la forma más fácil de ayudarnos a crecer.
 
 ---
 
@@ -17,7 +20,7 @@ LibreUML nació para hacer que el modelado visual sea accesible, moderno y útil
 LibreUML no es una sola app. Es un monorepo con dos productos que crecen juntos:
 
 ### 🖊️ LibreUML Modeler
-El editor de diagramas. Hoy soporta Class Diagrams, Use Case Diagrams y Domain Model Diagrams con un modelo semántico compartido entre vistas — igual que hace Enterprise Architect, pero en el browser y gratis.
+El editor de diagramas. Hoy soporta Class, Use Case, Domain Model, Sequence y Activity Diagrams con un modelo semántico compartido entre vistas — igual que hace Enterprise Architect, pero en el browser y gratis.
 
 La hoja de ruta apunta a cubrir el **modelo de vistas 4+1** (Kruchten) completo: vistas lógica, proceso, desarrollo, física y escenarios. Después vienen los templates de frameworks como C4.
 
@@ -68,10 +71,10 @@ LibreUML apunta al hueco que dejan todos: moderno, gratuito, con semántica UML 
 | Class Diagram | Lógica | ✅ |
 | Use Case Diagram | Escenarios (+1) | ✅ |
 | Domain Model Diagram | Lógica | ✅ |
-| Sequence Diagram | Proceso | 🔵 En roadmap |
+| Sequence Diagram | Proceso | ✅ |
 | Component Diagram | Desarrollo | 🔵 En roadmap |
 | Deployment Diagram | Física | 🔵 En roadmap |
-| Activity Diagram | Proceso | 🔵 En roadmap |
+| Activity Diagram | Proceso | ✅ |
 | State Machine | Lógica | 🔵 En roadmap |
 
 ### Code engineering
@@ -112,7 +115,7 @@ LibreUML apunta al hueco que dejan todos: moderno, gratuito, con semántica UML 
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/The_Indigo0218/LibreUML.git
+git clone https://github.com/LibreUML/LibreUML.git
 cd LibreUML
 
 # Instalar dependencias (instala todo el monorepo)
@@ -161,13 +164,15 @@ LibreUML/
 
 LibreUML es un proyecto open source. Las contribuciones son bienvenidas.
 
-Antes de arrancar con algo grande, abre un issue para alinear el enfoque. El proyecto tiene convenciones de commits y de ramas documentadas.
+Lee la guía de [CONTRIBUTING.md](CONTRIBUTING.md). Antes de arrancar con algo grande, abre un issue para alinear el enfoque. El proyecto tiene convenciones de commits y de ramas documentadas: los PRs externos se abren contra la rama `contributors`, no contra `main`.
 
 ---
 
 ## Licencia
 
-MIT — libre de usar, modificar y distribuir, incluyendo entornos educativos y comerciales.
+LibreUML se distribuye bajo la **[GNU AGPL-3.0](LICENSE)**. Es libre de usar, estudiar, modificar y distribuir, incluyendo entornos educativos y el uso interno en empresas; si modificas LibreUML y lo ofreces como servicio en red, debes publicar tus cambios bajo la misma licencia.
+
+Si necesitas integrarlo en un producto propietario sin las obligaciones de la AGPL, existe una [licencia comercial](COMMERCIAL_LICENSE.md).
 
 ---
 

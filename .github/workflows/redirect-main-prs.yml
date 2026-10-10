@@ -1,0 +1,55 @@
+name: Redirect PRs targeting main
+
+# External contributions must target the `contributors` branch, never `main`.
+# `pull_request_target` runs this file from the BASE branch with a write token,
+# so it only takes effect once it lives on `main`. It never checks out or runs
+# PR code, which is what makes that trigger safe here.
+on:
+  pull_request_target:
+    types: [opened]
+    branches: [main]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  redirect:
+    name: Redirect external PRs to contributors
+    runs-on: ubuntu-latest
+    # Maintainers' own PRs (e.g. the develop -> main promotion) are left alone.
+    if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) }}
+    steps:
+      - name: Comment and close
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+
+            const body = [
+              `Hi @${pr.user.login}, and thanks for contributing to LibreUML! 💙`,
+              "",
+              "We don't take pull requests directly into `main` (it's only updated from `develop` by the maintainers), so this PR is being closed automatically. Nothing is wrong with your change.",
+              "",
+              "**What to do:** open a new PR from the same branch against the **`contributors`** branch.",
+              "",
+              "If you enjoy the project, a ⭐ on the repo (and sharing it with friends or classmates) helps us a lot. Thank you!",
+              "",
+              "---",
+              "",
+              `Hola @${pr.user.login}, ¡gracias por contribuir a LibreUML! 💙`,
+              "",
+              "No aceptamos PRs directos a `main` (solo se actualiza desde `develop` por los mantenedores), así que este PR se cierra automáticamente. Tu cambio no tiene ningún problema.",
+              "",
+              "**Qué hacer:** abre un PR nuevo desde la misma rama hacia la rama **`contributors`**.",
+              "",
+              "Si te gusta el proyecto, una ⭐ en el repo (y compartirlo con amigos o compañeros) nos ayuda muchísimo. ¡Gracias!",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: pr.number, body,
+            });
+            await github.rest.pulls.update({
+              owner, repo, pull_number: pr.number, state: "closed",
+            });

@@ -35,7 +35,7 @@ interface CanvasOverlayProps {
   } | null;
   contextMenuOptions: { label: string; onClick: () => void; danger?: boolean; icon?: string }[];
   onCloseContextMenu: () => void;
-  selectionToolbar?: { x: number; y: number; actions: ToolbarAction[] } | null;
+  selectionToolbar?: { x: number; y: number; actions: ToolbarAction[]; placement?: 'above' | 'corner' } | null;
   inlineEdgePanel?: InlineEdgePanelProps | null;
   inlineClassPanel?: InlineClassPanelProps | null;
   inlineUseCasePanel?: InlineUseCasePanelProps | null;
@@ -92,6 +92,7 @@ export default function CanvasOverlay({
           x={selectionToolbar.x}
           y={selectionToolbar.y}
           actions={selectionToolbar.actions}
+          placement={selectionToolbar.placement}
         />
       )}
 

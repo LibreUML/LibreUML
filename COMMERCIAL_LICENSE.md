@@ -22,11 +22,11 @@ You need a commercial license if you want to:
 - **Internal business use** — using LibreUML within your organization
 - **Non-commercial use** — personal projects, education, research
 - **Open source distribution** — any use that complies with the AGPL-3.0
-- **Contributions** — all contributions to the main LibreUML repository are under AGPL-3.0
+- **Contributions** — all contributions to the main LibreUML repository are under AGPL-3.0. Contributors keep their copyright and also grant the maintainers the right to relicense their contribution (including under this commercial license), as set out in [CONTRIBUTING.md](./CONTRIBUTING.md#contributor-license-terms)
 
 ## How to obtain a commercial license
 
-Contact: **[Your Email / Contact Page]**
+Contact: **[abre un issue en LibreUML/LibreUML](https://github.com/LibreUML/LibreUML/issues/new) con la etiqueta `commercial-license`**
 
 Please include a brief description of your use case and we will provide a quote.
 

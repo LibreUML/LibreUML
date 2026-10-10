@@ -358,7 +358,7 @@ The 10 MB ceiling is aggressive for a UML tool. Based on observed `.luml.zip` ou
 **Current State:**
 
 ✅ **Exists:**
-- `src/features/diagram/components/menubar/modules/HelpMenu.tsx:21` — "Report Issue" button that opens `https://github.com/The-Indigo0218/LibreUML/issues` in a new tab (external link only)
+- `src/features/diagram/components/menubar/modules/HelpMenu.tsx:21` — "Report Issue" button that opens `https://github.com/LibreUML/LibreUML/issues` in a new tab (external link only)
 - `useToastStore` (`src/store/toast.store.ts`) — Toast notification system for success/error messages
 - Konva canvas `toDataURL()` capability exists (used in `src/canvas/export/diagramToSvg.ts` and `src/services/export.service.ts`) — can be reused for screenshot capture
 - `stageStore` (`src/canvas/store/stageStore.ts`) — Holds the Konva stage reference, enabling screenshot access

@@ -83,6 +83,16 @@ export const wikiData: WikiArticle[] = [
     relatedIds: ["concept_interface", "concept_inheritance"],
   },
 
+  // ── UML CONCEPTS: Diagrams ────────────────────────────────────────────────
+  {
+    id: "concept_activity_diagram",
+    category: "uml_concepts",
+    subcategory: "diagrams",
+    imagePlaceholder: "placeholder-uml-activity",
+    i18nKey: "wiki.concepts.activity_diagram",
+    relatedIds: ["feat_activity_diagram"],
+  },
+
   // ── UML CONCEPTS: Annotations ─────────────────────────────────────────────
   {
     id: "concept_note",
@@ -121,6 +131,16 @@ export const wikiData: WikiArticle[] = [
     subcategory: "export",
     imagePlaceholder: "placeholder-export-xmi",
     i18nKey: "wiki.features.export_xmi",
+  },
+
+  // ── TOOL FEATURES: Diagrams ───────────────────────────────────────────────
+  {
+    id: "feat_activity_diagram",
+    category: "tool_features",
+    subcategory: "diagrams",
+    imagePlaceholder: "placeholder-activity-diagram",
+    i18nKey: "wiki.features.activity_diagram",
+    relatedIds: ["concept_activity_diagram", "feat_export_xmi"],
   },
 
   // ── TOOL FEATURES: File Management ───────────────────────────────────────

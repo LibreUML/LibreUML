@@ -21,8 +21,8 @@ interface CategoryGroup {
 function buildTree(): CategoryGroup[] {
   const categoryOrder = ["uml_concepts", "tool_features"];
   const subcategoryOrder: Record<string, string[]> = {
-    uml_concepts: ["structures", "relations", "annotations"],
-    tool_features: ["export", "file_management"],
+    uml_concepts: ["structures", "relations", "diagrams", "annotations"],
+    tool_features: ["diagrams", "export", "file_management"],
   };
 
   return categoryOrder.map((catKey) => {

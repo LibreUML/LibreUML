@@ -107,6 +107,7 @@
       "documentation": "Documentation",
       "reportIssue": "Report Issue",
       "roadmap": "Roadmap",
+      "starRepo": "Star LibreUML on GitHub",
       "about": "About LibreUML"
     }
   },
@@ -115,6 +116,7 @@
     "project_structure": "Project Structure",
     "outline": "Outline",
     "project_files": "Project Files",
+    "unassigned": "Unassigned",
     "nodes": {
       "title": "Nodes",
       "class": "Class",
@@ -128,7 +130,24 @@
       "ucModule": "Module",
       "domainEntity": "Entity",
       "lifeline": "Lifeline",
-      "actorLifeline": "Actor"
+      "actorLifeline": "Actor",
+      "action": "Action",
+      "callOperation": "Call Operation",
+      "initialNode": "Initial",
+      "activityFinal": "Final",
+      "flowFinal": "Flow Final",
+      "decision": "Decision",
+      "merge": "Merge",
+      "fork": "Fork",
+      "join": "Join",
+      "objectNode": "Object",
+      "loopNode": "Loop",
+      "conditionalNode": "Conditional",
+      "sequenceNode": "Sequence",
+      "interruptibleRegion": "Interruptible Region",
+      "expansionRegion": "Expansion Region",
+      "activityParameterNode": "Parameter",
+      "activityPartition": "Partition"
     },
     "connections": {
       "title": "Connections",
@@ -145,7 +164,10 @@
       "messageAsync": "Async Message",
       "messageReply": "Reply",
       "messageCreate": "Create Message",
-      "messageDestroy": "Destroy Message"
+      "messageDestroy": "Destroy Message",
+      "controlFlow": "Control Flow",
+      "objectFlow": "Object Flow",
+      "exceptionHandler": "Exception Handler"
     },
     "otherDiagram": "from another diagram",
     "fragments": {
@@ -201,7 +223,8 @@
       "insertSeqFragment": "Insert SEQ Fragment",
       "insertBreakFragment": "Insert BREAK Fragment",
       "insertCriticalFragment": "Insert CRITICAL Fragment",
-      "insertInteractionUse": "Insert Reference (ref)"
+      "insertInteractionUse": "Insert Reference (ref)",
+      "activityProperties": "Activity Properties"
     },
     "node": {
       "duplicate": "Duplicate",
@@ -221,7 +244,18 @@
       "addStateInvariant": "Add State Invariant",
       "addFoundMessage": "Add Found Message",
       "addLostMessage": "Add Lost Message",
-      "decomposeLifeline": "Decompose…"
+      "decomposeLifeline": "Decompose…",
+      "linkOperation": "Link Operation…",
+      "editActivityPartitionProperties": "Lane Properties…",
+      "linkClassifier": "Link Classifier…",
+      "addInputPin": "Add Input Pin",
+      "addOutputPin": "Add Output Pin",
+      "linkParameter": "Link Parameter…",
+      "editTestCondition": "Edit Test Condition…",
+      "editExpansionMode": "Edit Mode…",
+      "addInputExpansionNode": "Add Input Expansion Node",
+      "addOutputExpansionNode": "Add Output Expansion Node",
+      "editParameterNode": "Edit Parameter…"
     },
     "edge": {
       "reverse": "Reverse Direction ⇄",
@@ -1226,7 +1260,8 @@
       "relations": "Relations",
       "annotations": "Annotations",
       "export": "Export",
-      "file_management": "File Management"
+      "file_management": "File Management",
+      "diagrams": "Diagrams"
     },
     "sections": {
       "what": "What is it?",
@@ -1317,6 +1352,14 @@
         "example": "A note attached to a class: 'Email must be unique in the system'.",
         "iso_rules": "ISO 19505: A note is a graphical symbol containing freely formatted comments.",
         "image_alt": "UML Note diagram"
+      },
+      "activity_diagram": {
+        "title": "Activity Diagram",
+        "definition": "Models a workflow step by step: actions, decisions, parallel branches and who is responsible for each step. It also works as a flowchart.",
+        "when": "Used to describe business processes, algorithms or the flow of a use case before writing any code.",
+        "example": "Checkout: Initial node → `Validate cart` → decision [stock available] / [no stock] → `Charge card` → fork into `Send receipt` and `Prepare shipment` → join → Final node.",
+        "iso_rules": "ISO 19505: a fork must be matched by a join, a decision needs at least two outgoing flows, and a merge or join needs at least two incoming flows.",
+        "image_alt": "UML Activity diagram"
       }
     },
     "features": {
@@ -1385,6 +1428,19 @@
           "Your work is safe on the file system"
         ],
         "tip": "Ctrl+S saves immediately. You can also use File → Save."
+      },
+      "activity_diagram": {
+        "title": "Using Activity Diagrams",
+        "description": "Draw workflows and flowcharts with swimlanes, guards and traceability to your class and use case models.",
+        "how_to": [
+          "Create a file and choose 'Activity' (it is also the flowchart type)",
+          "Drag an initial node, actions and a final node from the palette and connect them",
+          "Use decisions/merges for branches and fork/join for parallel work; double-click a flow to set its guard and weight",
+          "Drop a partition to create swimlanes and drag actions into them",
+          "Right-click an action, lane or the diagram to link it to an operation, a class or a use case",
+          "Open the Problems panel to review structure warnings, then export to XMI if needed"
+        ],
+        "tip": "Double-click a selected flow to edit its guard. Pins, loops, regions and parameter nodes are available from the palette and the right-click menu."
       }
     }
   },
@@ -1514,6 +1570,18 @@
     "extensionPoint.placeholder": "Extension point name",
     "extensionPoint.hint": "Define extension points in «{{name}}» to select one here"
   },
+  "controlFlow": {
+    "title": "Flow Properties",
+    "guard": "Guard",
+    "guard.placeholder": "e.g. balance > 0",
+    "weight": "Weight",
+    "weight.placeholder": "e.g. 5 or *",
+    "interrupting": "Interrupting"
+  },
+  "activityDiagram": {
+    "realizes": "realizes: {{name}}",
+    "realizesUseCase": "This activity realizes the \"{{name}}\" use case — click to open it"
+  },
   "fragment": {
     "title": "Combined Fragment Properties",
     "kind": "Kind",
@@ -1551,6 +1619,7 @@
     "createDiagram": "Create Diagram",
     "saveChanges": "Save Changes",
     "fileNameExists": "A file with this name already exists in this location",
+    "activityHint": "Also flowcharts",
     "soon": "Soon"
   },
   "createFolderModal": {

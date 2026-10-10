@@ -25,6 +25,8 @@ interface DiagramTypeConfig {
   label: string;
   icon: LucideIcon;
   enabled: boolean;
+  /** i18n key for a short second line — helps people find the type by another name. */
+  hintKey?: string;
 }
 
 const DIAGRAM_TYPE_CONFIG: DiagramTypeConfig[] = [
@@ -32,7 +34,7 @@ const DIAGRAM_TYPE_CONFIG: DiagramTypeConfig[] = [
   { type: "USE_CASE_DIAGRAM",      label: "Use Case",   icon: Users,           enabled: true  },
   { type: "DOMAIN_MODEL_DIAGRAM",  label: "Domain",     icon: Network,         enabled: true  },
   { type: "SEQUENCE_DIAGRAM",      label: "Sequence",   icon: ArrowRightLeft,  enabled: true  },
-  { type: "ACTIVITY_DIAGRAM",      label: "Activity",   icon: Activity,        enabled: false },
+  { type: "ACTIVITY_DIAGRAM",      label: "Activity",   icon: Activity,        enabled: true, hintKey: "createFileModal.activityHint" },
   { type: "STATE_MACHINE_DIAGRAM", label: "State",      icon: GitBranch,       enabled: false },
   { type: "COMPONENT_DIAGRAM",     label: "Component",  icon: Puzzle,          enabled: false },
   { type: "DEPLOYMENT_DIAGRAM",    label: "Deployment", icon: Server,          enabled: false },
@@ -272,7 +274,7 @@ export default function CreateFileModal({
               {t("createFileModal.diagramType")} <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {DIAGRAM_TYPE_CONFIG.map(({ type, label, icon: Icon, enabled }) => {
+              {DIAGRAM_TYPE_CONFIG.map(({ type, label, icon: Icon, enabled, hintKey }) => {
                 const isSelected = diagramType === type;
                 return (
                   <button
@@ -293,6 +295,9 @@ export default function CreateFileModal({
                     <span className="text-[10px] font-medium leading-tight">
                       {label}
                     </span>
+                    {hintKey && (
+                      <span className="text-[8px] leading-tight text-[#64748b]">{t(hintKey)}</span>
+                    )}
                     {!enabled && (
                       <span className="absolute -top-1.5 -right-1.5 text-[8px] font-bold uppercase tracking-wide text-amber-500/80 bg-[#1a1400] border border-amber-500/25 rounded-sm px-1 py-px leading-none">
                         {t("createFileModal.soon")}

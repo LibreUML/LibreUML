@@ -107,6 +107,7 @@
       "documentation": "Documentación",
       "reportIssue": "Reportar Error",
       "roadmap": "Hoja de Ruta",
+      "starRepo": "Dar estrella a LibreUML en GitHub",
       "about": "Acerca de LibreUML"
     }
   },
@@ -115,14 +116,7 @@
     "project_structure": "Estructura del Proyecto",
     "outline": "Esquema",
     "project_files": "Archivos del Proyecto",
-    "explorer": "Explorador",
-    "addPackage": "Añadir Nuevo Paquete",
-    "packageName": "Nombre del paquete...",
-    "noPackages": "No hay paquetes. Haz clic en + para crear uno.",
     "unassigned": "Sin Paquete",
-    "noClasses": "Sin clases asignadas",
-    "rename": "Renombrar",
-    "delete": "Eliminar",
     "nodes": {
       "title": "Nodos",
       "class": "Clase",
@@ -136,7 +130,24 @@
       "ucModule": "Módulo",
       "domainEntity": "Entidad",
       "lifeline": "Línea de Vida",
-      "actorLifeline": "Actor"
+      "actorLifeline": "Actor",
+      "action": "Acción",
+      "callOperation": "Llamada a Operación",
+      "initialNode": "Inicial",
+      "activityFinal": "Final",
+      "flowFinal": "Fin de Flujo",
+      "decision": "Decisión",
+      "merge": "Unión",
+      "fork": "Bifurcación",
+      "join": "Sincronización",
+      "objectNode": "Objeto",
+      "loopNode": "Bucle",
+      "conditionalNode": "Condicional",
+      "sequenceNode": "Secuencia",
+      "interruptibleRegion": "Región Interrumpible",
+      "expansionRegion": "Región de Expansión",
+      "activityParameterNode": "Parámetro",
+      "activityPartition": "Partición"
     },
     "connections": {
       "title": "Conexiones",
@@ -153,7 +164,10 @@
       "messageAsync": "Mensaje Asincrónico",
       "messageReply": "Respuesta",
       "messageCreate": "Mensaje de Creación",
-      "messageDestroy": "Mensaje de Destrucción"
+      "messageDestroy": "Mensaje de Destrucción",
+      "controlFlow": "Flujo de Control",
+      "objectFlow": "Flujo de Objeto",
+      "exceptionHandler": "Manejador de Excepción"
     },
     "otherDiagram": "de otro diagrama",
     "fragments": {
@@ -209,7 +223,8 @@
       "insertSeqFragment": "Insertar Fragmento SEQ",
       "insertBreakFragment": "Insertar Fragmento BREAK",
       "insertCriticalFragment": "Insertar Fragmento CRITICAL",
-      "insertInteractionUse": "Insertar Referencia (ref)"
+      "insertInteractionUse": "Insertar Referencia (ref)",
+      "activityProperties": "Propiedades de la Actividad"
     },
     "node": {
       "duplicate": "Duplicar",
@@ -229,7 +244,18 @@
       "addStateInvariant": "Añadir Invariante de Estado",
       "addFoundMessage": "Añadir Mensaje Encontrado",
       "addLostMessage": "Añadir Mensaje Perdido",
-      "decomposeLifeline": "Descomponer…"
+      "decomposeLifeline": "Descomponer…",
+      "linkOperation": "Vincular Operación…",
+      "editActivityPartitionProperties": "Propiedades del Carril…",
+      "linkClassifier": "Vincular Clasificador…",
+      "addInputPin": "Añadir Pin de Entrada",
+      "addOutputPin": "Añadir Pin de Salida",
+      "linkParameter": "Vincular Parámetro…",
+      "editTestCondition": "Editar Condición de Prueba…",
+      "editExpansionMode": "Editar Modo…",
+      "addInputExpansionNode": "Añadir Nodo de Expansión de Entrada",
+      "addOutputExpansionNode": "Añadir Nodo de Expansión de Salida",
+      "editParameterNode": "Editar Parámetro…"
     },
     "edge": {
       "reverse": "Invertir Dirección ⇄",
@@ -330,7 +356,6 @@
       "discardTitle": "¿Descartar Cambios?",
       "discardMessage": "El diagrama volverá a su último estado guardado.",
       "deletePackageTitle": "¿Eliminar Paquete?",
-      "deletePackageWithClasses": "El paquete '{{name}}' contiene clases. Si lo eliminas, las clases se moverán a 'Sin Paquete'. ¿Deseas continuar?",
       "deletePackageWithClassesCount": "El paquete '{{name}}' contiene {{count}} clase(s). ¿Qué deseas hacer?",
       "deletePackageEmpty": "¿Estás seguro de que deseas eliminar el paquete '{{name}}'?",
       "deletePackageAndClasses": "Eliminar Paquete y Clases",
@@ -1235,7 +1260,8 @@
       "relations": "Relaciones",
       "annotations": "Anotaciones",
       "export": "Exportación",
-      "file_management": "Gestión de Archivos"
+      "file_management": "Gestión de Archivos",
+      "diagrams": "Diagramas"
     },
     "sections": {
       "what": "¿Qué es?",
@@ -1326,6 +1352,14 @@
         "example": "Una nota anexa a una clase: 'Email must be unique in the system'.",
         "iso_rules": "ISO 19505: Una nota es un símbolo gráfico que contiene comentarios libremente formateados.",
         "image_alt": "Diagrama con nota en UML"
+      },
+      "activity_diagram": {
+        "title": "Diagrama de Actividad",
+        "definition": "Modela un flujo de trabajo paso a paso: acciones, decisiones, ramas paralelas y quién responde por cada paso. También sirve como diagrama de flujo.",
+        "when": "Se usa para describir procesos de negocio, algoritmos o el flujo de un caso de uso antes de escribir código.",
+        "example": "Compra: nodo inicial → `Validar carrito` → decisión [hay stock] / [sin stock] → `Cobrar tarjeta` → fork hacia `Enviar recibo` y `Preparar envío` → join → nodo final.",
+        "iso_rules": "ISO 19505: todo fork debe tener su join, una decisión necesita al menos dos flujos de salida y un merge o join necesita al menos dos de entrada.",
+        "image_alt": "Diagrama de Actividad UML"
       }
     },
     "features": {
@@ -1394,6 +1428,19 @@
           "Tu trabajo está seguro en el sistema de archivos"
         ],
         "tip": "Ctrl+S guarda inmediatamente. También puedes usar File → Save."
+      },
+      "activity_diagram": {
+        "title": "Usar Diagramas de Actividad",
+        "description": "Dibuja flujos de trabajo y diagramas de flujo con carriles, guardas y trazabilidad hacia tus modelos de clases y casos de uso.",
+        "how_to": [
+          "Crea un archivo y elige 'Activity' (también es el tipo para diagramas de flujo)",
+          "Arrastra un nodo inicial, acciones y un nodo final desde la paleta y conéctalos",
+          "Usa decisiones/merge para ramificar y fork/join para trabajo paralelo; haz doble clic en un flujo para definir su guarda y peso",
+          "Suelta una partición para crear carriles y arrastra acciones dentro",
+          "Clic derecho en una acción, carril o el diagrama para vincularlo a una operación, clase o caso de uso",
+          "Abre el panel de Problemas para revisar advertencias de estructura y exporta a XMI si lo necesitas"
+        ],
+        "tip": "Haz doble clic en un flujo seleccionado para editar su guarda. Pines, bucles, regiones y nodos de parámetro están en la paleta y el menú contextual."
       }
     }
   },
@@ -1523,6 +1570,18 @@
     "extensionPoint.placeholder": "Nombre del punto de extensión",
     "extensionPoint.hint": "Define puntos de extensión en «{{name}}» para seleccionar uno aquí"
   },
+  "controlFlow": {
+    "title": "Propiedades del flujo",
+    "guard": "Guarda",
+    "guard.placeholder": "ej. saldo > 0",
+    "weight": "Peso",
+    "weight.placeholder": "ej. 5 o *",
+    "interrupting": "Interrumpe"
+  },
+  "activityDiagram": {
+    "realizes": "realiza: {{name}}",
+    "realizesUseCase": "Esta actividad realiza el caso de uso \"{{name}}\" — clic para abrirlo"
+  },
   "fragment": {
     "title": "Propiedades del Fragmento Combinado",
     "kind": "Tipo",
@@ -1560,6 +1619,7 @@
     "createDiagram": "Crear Diagrama",
     "saveChanges": "Guardar Cambios",
     "fileNameExists": "Ya existe un archivo con este nombre en esta ubicación",
+    "activityHint": "También diagramas de flujo",
     "soon": "Pronto"
   },
   "createFolderModal": {
