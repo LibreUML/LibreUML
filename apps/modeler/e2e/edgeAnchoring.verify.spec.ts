@@ -1,5 +1,7 @@
 import { test, expect, getView, seedDiagram, edgeMidpoint, nodeRect, nodeCenter, dragFromTo } from './fixtures';
 import type { Page } from '@playwright/test';
+import os from 'node:os';
+import path from 'node:path';
 
 /**
  * Verification spec for the edge-anchoring UX batch (P1/P2/P3).
@@ -62,7 +64,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
     const edge: any = (await getView(page)).edges.find((e) => e.id === 've');
     expect(edge).toBeTruthy();
     expect(edge.anchorLocked).toBeFalsy();
-    await page.screenshot({ path: '/tmp/verify-p1-floating.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p1-floating.png') });
   });
 
   test('P2/P4 — drawing onto a cardinal mark anchors to that exact ratio (magnet)', async ({ page }) => {
@@ -80,7 +82,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
 
     await expect.poll(async () => (await getView(page)).edges.length).toBe(1);
     const edge: any = (await getView(page)).edges[0];
-    await page.screenshot({ path: '/tmp/verify-p2-fixed.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p2-fixed.png') });
     // Free border anchors; magnet lands the clean cardinal drops exactly.
     expect(edge.sourceAnchor).toEqual({ nx: 1, ny: 0.5 });
     expect(edge.targetAnchor).toEqual({ nx: 0, ny: 0.5 });
@@ -100,7 +102,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
 
     await expect.poll(async () => (await getView(page)).edges.length).toBe(1);
     const edge: any = (await getView(page)).edges[0];
-    await page.screenshot({ path: '/tmp/verify-p2-freepoint.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p2-freepoint.png') });
     expect(edge.targetAnchor.nx).toBe(0);                // left border
     expect(edge.targetAnchor.ny).toBeGreaterThan(0.15);  // continuous, not a cardinal
     expect(edge.targetAnchor.ny).toBeLessThan(0.45);
@@ -116,7 +118,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
     await page.mouse.down();
     await page.mouse.move(720, 180, { steps: 8 });
     await page.waitForTimeout(80);
-    await page.screenshot({ path: '/tmp/verify-color-empty-amber.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-color-empty-amber.png') });
     await page.mouse.up();
   });
 
@@ -148,7 +150,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
     // Freeze check: capture WITHOUT moving the mouse — this is the exact moment
     // the connection-point dots used to stay frozen on Beta. With the mouseup
     // auto-clear they should be gone.
-    await page.screenshot({ path: '/tmp/verify-p3-relink-frozen-check.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p3-relink-frozen-check.png') });
 
     // What a real user sees after releasing: dismiss the telemetry toast and move
     // the cursor off the nodes so the transient connection-point overlay clears.
@@ -156,7 +158,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
     await page.mouse.move(700, 160);
     await page.mouse.click(700, 160); // deselect to drop the edge toolbar too
     await page.waitForTimeout(150);
-    await page.screenshot({ path: '/tmp/verify-p3-relink-clean.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p3-relink-clean.png') });
   });
 
   test('P4 — dragging the endpoint to a free border point stores a continuous {nx,ny}', async ({ page }) => {
@@ -174,7 +176,7 @@ test.describe('edge anchoring P1/P2/P3', () => {
     await page.waitForTimeout(150);
 
     const a: any = (await getView(page)).edges[0].targetAnchor;
-    await page.screenshot({ path: '/tmp/verify-p4-freepoint.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p4-freepoint.png') });
     expect(a).toBeTruthy();
     expect(a.nx).toBe(0);                 // magnet snapped to the left edge
     expect(a.ny).toBeGreaterThan(0.15);   // …but the vertical position is continuous
@@ -205,6 +207,6 @@ test.describe('edge anchoring P1/P2/P3', () => {
     await expect
       .poll(async () => JSON.stringify((await getView(page)).edges[0].targetAnchor ?? null))
       .toBe(JSON.stringify({ nx: 0.5, ny: 0 }));
-    await page.screenshot({ path: '/tmp/verify-p3-reanchor.png' });
+    await page.screenshot({ path: path.join(os.tmpdir(), 'verify-p3-reanchor.png') });
   });
 });
