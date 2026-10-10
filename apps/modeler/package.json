@@ -99,7 +99,7 @@
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/icon.png"
+      "icon": "public/icon.icns"
     },
     "linux": {
       "target": "AppImage",
