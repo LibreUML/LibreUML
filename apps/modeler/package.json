@@ -99,10 +99,11 @@
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/icon.icns"
+      "icon": "public/icon.png"
     },
     "linux": {
       "target": "AppImage",
+      "icon": "public/icon.png",
       "category": "Development"
     },
     "fileAssociations": [
