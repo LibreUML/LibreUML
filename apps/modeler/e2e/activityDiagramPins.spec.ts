@@ -39,12 +39,28 @@ async function seed(page: Page) {
   });
 }
 
+
+/**
+ * Right-clicks until the menu item shows up. The first right-click right
+ * after seeding can race Konva's hit-canvas redraw (§ hit-canvas freshness —
+ * a residual window of a few frames under load), so retry instead of
+ * assuming the very first click landed on the shape.
+ */
+async function rightClickUntilVisible(page: Page, x: number, y: number, name: string) {
+  const item = page.getByRole('button', { name });
+  await expect(async () => {
+    await page.mouse.click(x, y, { button: 'right' });
+    await expect(item).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
+  return item;
+}
+
 /** Right-clicks the action and clicks the menu item, returning the pin's new ViewNode id. */
 async function addPin(page: Page, label: 'Add Input Pin' | 'Add Output Pin'): Promise<string> {
   const before = await viewNodeIds(page);
   const node = (await rect(page, 'vn-n1'))!;
-  await page.mouse.click(node.x + node.width / 2, node.y + node.height / 2, { button: 'right' });
-  await page.getByRole('button', { name: label }).click();
+  const item = await rightClickUntilVisible(page, node.x + node.width / 2, node.y + node.height / 2, label);
+  await item.click();
   const after = await viewNodeIds(page);
   const newId = after.find((id) => !before.includes(id));
   expect(newId).toBeTruthy();

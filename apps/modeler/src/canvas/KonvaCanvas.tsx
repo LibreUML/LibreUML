@@ -1,5 +1,6 @@
 import { useRef, useEffect, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import { Stage, Layer, Line, Circle, Rect, Text } from 'react-konva';
+import type Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import GridPattern from './engine/GridPattern';
 import { useViewport } from './engine/useViewport';
@@ -1987,23 +1988,11 @@ export default function KonvaCanvas() {
     (edgeId: string) => {
       const edge = edges.find((e) => e.id === edgeId);
       if (!edge) return;
-      // KNOWN BUG, still open (found 2026-09-07 while building v1.1's
-      // interrupting-flow checkbox; see PLAN-activity-diagram.md §8.8):
-      // a genuine double-click on an *already-selected* edge never reaches
-      // this handler at all. Selecting an edge (its first click) mounts a
-      // waypoint/segment-drag overlay exactly on top of the line, and
-      // Konva's own dblclick synthesis requires the second click's
-      // hit-test to resolve to the *same* shape as the first
-      // (`Stage._pointerup`, `clickEndShape === shape` in
-      // konva/lib/Stage.js) — with the overlay in the way, it resolves to
-      // a different shape, so the browser never fires `dblclick` on the
-      // Line. Confirmed with a native-event trace, not just the app's own
-      // logs. This breaks double-click editing on *any* edge kind that has
-      // a props modal (guard/weight here, «extend»'s condition too), not
-      // just CONTROL_FLOW/OBJECT_FLOW — a cross-cutting fix (bypassing
-      // Konva's per-shape dblclick synthesis with a stage-level native
-      // listener + our own hit-test), not a one-line patch. Design proposed
-      // to IndigoDev, awaiting go-ahead before touching this shared file.
+      // Double-click on an *already-selected* edge: Konva's own dblclick
+      // synthesis never fires there (the waypoint overlay mounted on
+      // selection steals the second click's hit-test), so the stage-level
+      // native listener below (`useEffect` after this callback) calls this
+      // handler directly. See PLAN-activity-diagram.md §8.8.
       //
       // The sibling bug (`edgeId` here is the ViewEdge id, but both modals
       // key their lookup by relation id — production mints two separate
@@ -2031,6 +2020,37 @@ export default function KonvaCanvas() {
     },
     [edges, openExtendProps, openControlFlowProps, openDomainAssociationProps, openVfsEdgeAction, buildAnchorSnapshot, vfsController.vfsFile?.diagramType, vfsController.edges],
   );
+
+  // Native dblclick fires whenever both clicks land on the same <canvas>,
+  // regardless of which Konva shape each one hit — so it covers the selected
+  // edge case Konva's per-shape synthesis misses. We hit-test the selected
+  // edge's own line (ignoring overlays on top of it) and de-dupe against the
+  // Konva path, which fires first when it does work.
+  const lastEdgeDblRef = useRef<{ id: string; at: number } | null>(null);
+  const fireEdgeDblClick = useCallback(
+    (edgeId: string) => {
+      const last = lastEdgeDblRef.current;
+      const now = Date.now();
+      if (last && last.id === edgeId && now - last.at < 400) return;
+      lastEdgeDblRef.current = { id: edgeId, at: now };
+      handleEdgeDblClick(edgeId);
+    },
+    [handleEdgeDblClick],
+  );
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || !selectedEdgeId) return;
+    const container = stage.container();
+    const onNativeDblClick = (ev: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const pos = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+      const line = stage.findOne<Konva.Shape>(`#edge-line-${selectedEdgeId}`);
+      if (line && line.intersects(pos)) fireEdgeDblClick(selectedEdgeId);
+    };
+    container.addEventListener('dblclick', onNativeDblClick);
+    return () => container.removeEventListener('dblclick', onNativeDblClick);
+  }, [selectedEdgeId, fireEdgeDblClick, stageRef, size.width]);
 
   const handleStageContextMenu = useCallback(
     (e: KonvaEventObject<PointerEvent>) => {
@@ -2462,7 +2482,7 @@ export default function KonvaCanvas() {
   }, [toolbarTarget, shapes, edges, activeModel, vfsController, openSSoTClassEditor, openVfsEdgeAction, openInlineEdgePanel, openInlineClassPanel, openInlineUseCasePanel, openInlineDomainPanel, openInlineActorPanel, buildAnchorSnapshot, copiedStyle, t]);
 
   const selectionToolbar = toolbarPos && toolbarActions.length > 0
-    ? { x: toolbarPos.x, y: toolbarPos.y, actions: toolbarActions }
+    ? { x: toolbarPos.x, y: toolbarPos.y, actions: toolbarActions, placement: toolbarTarget?.type === 'edge' ? 'corner' as const : 'above' as const }
     : null;
 
   // ── Inline edge properties panel ───────────────────────────────────────────
@@ -2915,7 +2935,7 @@ export default function KonvaCanvas() {
                 onContextMenu={handleEdgeContextMenu}
                 onMouseEnter={handleEdgeMouseEnter}
                 onMouseLeave={handleEdgeMouseLeave}
-                onDblClick={handleEdgeDblClick}
+                onDblClick={fireEdgeDblClick}
                 visible={isVisible && !shouldHideEdge}
               />
             ))}
@@ -3050,7 +3070,7 @@ export default function KonvaCanvas() {
                 selected={selectedEdgeId === edge.id}
                 onWaypointsChange={handleEdgeWaypointsChange}
                 onEndpointDrop={handleEndpointDrop}
-                onDblClick={handleEdgeDblClick}
+                onDblClick={fireEdgeDblClick}
                 visible={isVisible && !shouldHideEdge}
               />
             ))}

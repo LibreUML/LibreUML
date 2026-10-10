@@ -635,6 +635,9 @@ export default function KonvaEdge({
               y={labelPositions.centerY - 16}
               offsetX={Math.round(kindLabel.length * 3.6 + 5)}
               offsetY={10}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -663,6 +666,9 @@ export default function KonvaEdge({
               y={labelPositions.centerY - 16}
               offsetX={Math.round(kindLabel.length * 3.6 + 5)}
               offsetY={10}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -688,6 +694,9 @@ export default function KonvaEdge({
               y={labelPositions.sourceMultY}
               offsetX={Math.round(sourceMultiplicity.length * 3.2 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -714,6 +723,9 @@ export default function KonvaEdge({
               y={labelPositions.sourceRoleY}
               offsetX={Math.round(sourceRole.length * 3.2 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -740,6 +752,9 @@ export default function KonvaEdge({
               y={labelPositions.targetMultY}
               offsetX={Math.round(targetMultiplicity.length * 3.2 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -766,6 +781,9 @@ export default function KonvaEdge({
               y={labelPositions.targetRoleY}
               offsetX={Math.round(targetRole.length * 3.2 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -793,6 +811,8 @@ export default function KonvaEdge({
               offsetX={Math.round(stereotypeLabel.length * 3.3 + labelPad)}
               offsetY={Math.round((12 + labelPad * 2) / 2)}
               onDblClick={() => onDblClick?.(id)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
             >
               <Tag
                 fill={labelBgFill}
@@ -819,6 +839,8 @@ export default function KonvaEdge({
               offsetX={Math.round(label.length * 3.3 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
               onDblClick={() => onDblClick?.(id)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
             >
               <Tag
                 fill={labelBgFill}
@@ -845,6 +867,9 @@ export default function KonvaEdge({
               y={labelPositions.centerY + 20}
               offsetX={Math.round((condition.length + 2) * 3.2 + labelPad)}
               offsetY={Math.round((10 + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}
@@ -870,6 +895,9 @@ export default function KonvaEdge({
               y={labelPositions.centerY + 20}
               offsetX={Math.round(flowLabel.length * 3.2 * labelScale + labelPad)}
               offsetY={Math.round((labelSize + labelPad * 2) / 2)}
+              onClick={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onTap={(e) => { e.cancelBubble = true; onSelect?.(id); }}
+              onDblClick={() => onDblClick?.(id)}
             >
               <Tag
                 fill={labelBgFill}

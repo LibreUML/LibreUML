@@ -214,6 +214,47 @@ test.describe('A2 — decision, fork/join, guard', () => {
     expect(relations?.f2?.guard).toBe('balance >= 100');
   });
 
+  test('double-clicking an already-selected control-flow edge still opens Flow Properties', async ({ page }) => {
+    // Regression for the §8.8 "bug 2": once an edge is selected, a Konva
+    // waypoint overlay sits on the line and a DOM SelectionToolbar used to
+    // sit just above the selection anchor — either swallowed the second
+    // click. Probe the line's own midpoint and 60% (read from the rendered
+    // Konva line, so routing doesn't matter), the spots that used to fail.
+    await page.getByRole('button', { name: 'No thanks' }).click().catch(() => {});
+    for (const t of [0.5, 0.6]) {
+      const pt = await page.evaluate((f) => {
+        type KNode = {
+          points(): number[];
+          getAbsoluteTransform(): { point(p: { x: number; y: number }): { x: number; y: number } };
+        };
+        const stage = (window as unknown as {
+          Konva: { stages: { findOne(s: string): KNode; container(): HTMLElement }[] };
+        }).Konva.stages[0];
+        const line = stage.findOne('#edge-line-ve-f2');
+        const pts: number[] = line.points();
+        const tr = line.getAbsoluteTransform();
+        const n = pts.length / 2 - 1;
+        const at = f * n;
+        const i = Math.min(Math.floor(at), n - 1);
+        const k = at - i;
+        const x = pts[i * 2] + (pts[i * 2 + 2] - pts[i * 2]) * k;
+        const y = pts[i * 2 + 1] + (pts[i * 2 + 3] - pts[i * 2 + 1]) * k;
+        const p = tr.point({ x, y });
+        const r = stage.container().getBoundingClientRect();
+        return { x: p.x + r.left, y: p.y + r.top };
+      }, t);
+      // Retry: right after seeding, the first clicks can race Konva's
+      // hit-canvas redraw under load (see hitCanvasFreshness.spec.ts).
+      await expect(async () => {
+        await page.mouse.click(pt.x, pt.y); // select the edge first
+        await page.mouse.dblclick(pt.x, pt.y);
+        await expect(page.getByText('Flow Properties')).toBeVisible({ timeout: 1500 });
+      }).toPass({ timeout: 12_000 });
+      await page.getByRole('button', { name: 'Cancel' }).click();
+      await expect(page.getByText('Flow Properties')).toBeHidden();
+    }
+  });
+
   test('the branching model — decision, fork and join — survives into the model', async ({ page }) => {
     const nodes = await page.evaluate(
       () => (window.__libreumlE2E as never as {

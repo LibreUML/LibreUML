@@ -43,6 +43,13 @@ export interface SelectionToolbarProps {
   x: number;
   y: number;
   actions: ToolbarAction[];
+  /**
+   * 'above' centres the toolbar over the anchor (nodes). 'corner' pushes it up
+   * and to the right so it never covers the line passing through the anchor
+   * (edges) — otherwise a double-click on a selected edge lands on this DOM
+   * div instead of the canvas.
+   */
+  placement?: 'above' | 'corner';
 }
 
 const ICONS: Record<ToolbarIcon, typeof Pencil> = {
@@ -59,7 +66,7 @@ const ICONS: Record<ToolbarIcon, typeof Pencil> = {
   font: Type,
 };
 
-export default function SelectionToolbar({ x, y, actions }: SelectionToolbarProps) {
+export default function SelectionToolbar({ x, y, actions, placement = 'above' }: SelectionToolbarProps) {
   const { t } = useTranslation();
   const [openSwatch, setOpenSwatch] = useState<number | null>(null);
 
@@ -74,7 +81,9 @@ export default function SelectionToolbar({ x, y, actions }: SelectionToolbarProp
       style={{
         left: `${x}px`,
         top: `${y}px`,
-        transform: 'translate(-50%, calc(-100% - 10px))',
+        transform: placement === 'corner'
+          ? 'translate(18px, calc(-100% - 18px))'
+          : 'translate(-50%, calc(-100% - 10px))',
       }}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
